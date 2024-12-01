@@ -426,24 +426,38 @@ def signin():
                 query = "SELECT * FROM users WHERE username = %s AND password = %s"
                 cursor.execute(query, (username, password))
                 user = cursor.fetchone()
-                cursor.close()
-                conn.close()
 
                 if user:
                     session['username'] = username
-                    session['role'] = user[4]  
+                    session['role'] = user[4]
+
+                    # Log the sign-in event
+                    event_type = "sign-in"
+                    event_message = f"User {username} signed in successfully."
+                    created_at = datetime.now()
+
+                    # Insert log entry into the logs table
+                    cursor.execute("""
+                        INSERT INTO logs (username, event_type, event_message, created_at)
+                        VALUES (%s, %s, %s, %s)
+                    """, (username, event_type, event_message, created_at))
+                    conn.commit()
 
                     # Redirect based on the user's role
                     if session['role'] == 'admin':
                         return redirect(url_for('admin_dashboard'))
                     else:
                         return redirect(url_for('home', username=username))
+
                 else:
                     message = "Invalid username or password."
+                cursor.close()
+                conn.close()
             except Exception as e:
                 message = f"An error occurred: {e}"
 
     return render_template('signin.html', message=message, recaptcha_site_key=RECAPTCHA_SITE_KEY)
+
 
 @app.route('/home', methods=['GET', 'POST'])
 def home():
@@ -486,39 +500,10 @@ def home():
     return render_template('home.html', username=session['username'], message=message)
 
 
-# Define the upload folder and allowed extensions
-UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Ensure the upload folder exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-def allowed_file(filename):
-    """Check if the file has an allowed extension."""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route('/upload_image', methods=['GET', 'POST'])
 def upload_image():
     if 'username' not in session:
         return redirect(url_for('signin'))
-
-    if request.method == 'POST':
-        # Check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If no file is selected
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)  # Save the file
-            flash('File uploaded successfully!')
-            return render_template('upload_image.html', filename=filename)
     
     return render_template('upload_image.html')
 
