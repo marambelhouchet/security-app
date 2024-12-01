@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .message {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="message">
+        <p>Are you sure you want to log out?</p>
+    </div>
+    
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit" class="btn">Yes, log me out</button>
+    </form>
+    
+    <br>
+    <a href="{{ url_for('home', username=session['username']) }}">Cancel</a>
+</body>
+</html>

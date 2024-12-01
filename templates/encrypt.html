@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ algorithm | capitalize }} Encryption</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ algorithm | capitalize }} Encryption</h1>
+        <form method="POST">
+            <textarea name="text" required placeholder="Enter text to encrypt/decrypt" rows="4"></textarea><br>
+
+            {% if algorithm == 'caesar' %}
+                <label for="shift">Shift (for Caesar Cipher):</label>
+                <input type="number" name="shift" value="3"><br>
+            {% endif %}
+
+            <label for="key">Key (for AES encryption):</label>
+            <input type="text" name="key" required><br>
+
+            <button type="submit" name="action" value="encrypt">Encrypt</button>
+            <button type="submit" name="action" value="decrypt">Decrypt</button>
+        </form>
+
+        {% if encrypted_text %}
+            <p><strong>Encrypted Text:</strong> {{ encrypted_text }}</p>
+        {% endif %}
+
+        {% if decrypted_text %}
+            <p><strong>Decrypted Text:</strong> {{ decrypted_text }}</p>
+        {% endif %}
+
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

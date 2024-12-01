@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Image Encryption and Decryption</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="file"],
+        input[type="number"] {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #5cb85c;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ccc;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Encrypt or decrypt your photo </h1>
+
+    <!-- Encrypt Image Section -->
+    <form id="encryptForm">
+        <h2>Encrypt Image</h2>
+        <label for="image">Choose a PNG image:</label>
+        <input type="file" id="image" accept="image/png" required>
+        <label for="key">Encryption Key (Number):</label>
+        <input type="number" id="key" required>
+        <button type="submit">Encrypt</button>
+    </form>
+
+    <!-- Decrypt Image Section -->
+    <form id="decryptForm">
+        <h2>Decrypt Image</h2>
+        <label for="encryptedImage">Choose a PNG encrypted image:</label>
+        <input type="file" id="encryptedImage" accept="image/png" required>
+        <label for="decryptKey">Decryption Key (Number):</label>
+        <input type="number" id="decryptKey" required>
+        <button type="submit">Decrypt</button>
+    </form>
+
+    <div class="message" id="message"></div>
+    <img id="outputImage" style="display:none;" />
+    <a id="downloadLink" style="display:none;" download="result.png">Download Result</a>
+
+    <script>
+        function xorEncryptDecrypt(imageData, key) {
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i++) {
+                data[i] ^= key;  // XOR operation with the key
+            }
+
+            return new ImageData(data, imageData.width, imageData.height);
+        }
+
+        function processImage(file, key, isDecrypt, callback) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = function () {
+                const width = img.width;
+                const height = img.height;
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, width, height);
+
+                // Encrypt or Decrypt using XOR operation
+                const processedImageData = xorEncryptDecrypt(imageData, key);
+
+                ctx.putImageData(processedImageData, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    callback(url);
+                }, "image/png");
+            };
+
+            img.onerror = function () {
+                alert("Failed to load the image.");
+            };
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Encrypt form submission
+        document.getElementById('encryptForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const imageFile = document.getElementById('image').files[0];
+            const key = parseInt(document.getElementById('key').value, 10);
+
+            if (!imageFile) {
+                return;
+            }
+
+            processImage(imageFile, key, false, (url) => {
+                document.getElementById('message').innerHTML = "Encryption Complete!";
+                const outputImage = document.getElementById('outputImage');
+                const downloadLink = document.getElementById('downloadLink');
+
+                outputImage.src = url;
+                outputImage.style.display = 'block';
+
+                downloadLink.href = url;
+                downloadLink.style.display = 'block';
+                downloadLink.innerText = 'Download Encrypted Image';
+            });
+        });
+
+        // Decrypt form submission
+        document.getElementById('decryptForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const encryptedImageFile = document.getElementById('encryptedImage').files[0];
+            const key = parseInt(document.getElementById('decryptKey').value, 10);
+
+            if (!encryptedImageFile) {
+                return;
+            }
+
+            processImage(encryptedImageFile, key, true, (url) => {
+                document.getElementById('message').innerHTML = "Decryption Complete!";
+                const outputImage = document.getElementById('outputImage');
+                const downloadLink = document.getElementById('downloadLink');
+
+                outputImage.src = url;
+                outputImage.style.display = 'block';
+
+                downloadLink.href = url;
+                downloadLink.style.display = 'block';
+                downloadLink.innerText = 'Download Decrypted Image';
+            });
+        });
+    </script>
+</body>
+</html>

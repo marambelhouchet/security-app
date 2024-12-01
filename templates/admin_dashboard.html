@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #4e73df;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 36px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #4e73df;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            font-size: 22px;
+            color: #343a40;
+            margin-bottom: 15px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        form:hover {
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        input, select, button, textarea {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 8px rgba(78, 115, 223, 0.3);
+            outline: none;
+        }
+
+        button {
+            background-color: #4e73df;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2e59d9;
+        }
+
+        button:active {
+            background-color: #1d4a9b;
+        }
+
+        button.logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        button.logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        button.logout-btn:active {
+            background-color: #bd2130;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .user-list {
+            margin-top: 30px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .user-list li {
+            background-color: #fff;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-list li .role {
+            font-weight: bold;
+            color: #e67e22;
+        }
+
+        .user-list li:hover {
+            background-color: #f1f1f1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+            font-size: 16px;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f1f1f1;
+            color: #495057;
+        }
+
+        table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .logs {
+            background-color: #fff;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            font-family: monospace;
+            overflow: auto;
+            max-height: 400px;
+            margin-top: 30px;
+        }
+
+        /* Hide the messages section by default */
+        .messages-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .messages-container table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .messages-container table th, .messages-container table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .messages-container table th {
+            background-color: #f1f1f1;
+            color: #495057;
+        }
+
+        .messages-container table tr:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <h2>User Management</h2>
+
+        <h3>Add New User</h3>
+        <form method="POST">
+            <input type="text" name="new_username" placeholder="Username" required>
+            <input type="password" name="new_password" placeholder="Password" required>
+            <select name="new_role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button type="submit" name="action" value="add_user">Add User</button>
+        </form>
+
+        <h3>Delete User</h3>
+        <form method="POST">
+            <input type="text" name="username_to_delete" placeholder="Username to delete" required>
+            <button type="submit" name="action" value="delete_user">Delete User</button>
+        </form>
+
+        <h3>Change User Role</h3>
+        <form method="POST">
+            <input type="text" name="username_to_change" placeholder="Username" required>
+            <select name="new_role_for_user">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button type="submit" name="action" value="change_role">Change Role</button>
+        </form>
+
+        <!-- Message Sending Form -->
+        <h3>Send Message</h3>
+        <form action="{{ url_for('admin_dashboard', username=username) }}" method="POST">
+            <label for="receiver">Send a message to:</label>
+            <input type="text" id="receiver" name="receiver" required><br><br>
+            <textarea name="message" required placeholder="Write your message here..."></textarea><br><br>
+            <button type="submit">Send Message</button>
+        </form>
+
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
+
+
+        <h3>Logs</h3>
+        <div class="logs">
+            {% for log in logs %}
+                <p><strong>{{ log[0] }}</strong> - {{ log[1] }}: {{ log[2] }} at {{ log[3] }}</p>
+            {% endfor %}
+        </div>
+
+        <h3>Decrypt Messages Sent to Admin</h3>
+        <form method="POST">
+            <label for="password">Enter password to decrypt messages:</label>
+            <input type="password" name="password" required>
+            <button type="submit">Decrypt</button>
+        </form>
+
+        {% if message_error %}
+            <div class="error">{{ message_error }}</div>
+        {% endif %}
+
+        <h3>Messages Sent to Admin</h3>
+        <button id="toggleMessagesBtn">View Admin Messages</button>
+
+        <!-- Hidden Messages Section -->
+        <div id="messagesContainer" class="messages-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for decrypted_message in admin_messages %}
+                        <tr>
+                            <td>
+                                <strong>Message:</strong> {{ decrypted_message }} <br>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Admin Dashboard. All rights reserved. | <a href="{{ url_for('logout') }}">Logout</a></p>
+    </footer>
+
+    <script>
+        document.getElementById("toggleMessagesBtn").onclick = function() {
+            var container = document.getElementById("messagesContainer");
+            if (container.style.display === "none") {
+                container.style.display = "block";
+            } else {
+                container.style.display = "none";
+            }
+        };
+    </script>
+</body>
+</html>

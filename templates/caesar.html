@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caesar Cipher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 2.5em;
+            color: #333;
+        }
+
+        h3 {
+            color: #444;
+        }
+
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .result p {
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Caesar Cipher Encryption and Decryption</h1>
+    <div class="container">
+        <h3>Encrypt Text</h3>
+        <form method="POST">
+            <div class="form-group">
+                <label for="text">Text to Encrypt:</label>
+                <input type="text" id="text" name="text" required>
+            </div>
+            <div class="form-group">
+                <label for="shift">Shift:</label>
+                <input type="number" id="shift" name="shift" value="3" required>
+            </div>
+            <button type="submit" name="action" value="encrypt">Encrypt</button>
+        </form>
+
+        {% if encrypted_text %}
+        <div class="result">
+            <h3>Encrypted Text:</h3>
+            <p>{{ encrypted_text }}</p>
+        </div>
+        {% endif %}
+
+        <h3>Decrypt Text</h3>
+        <form method="POST">
+            <div class="form-group">
+                <label for="encrypted_text">Encrypted Text:</label>
+                <input type="text" id="encrypted_text" name="encrypted_text" required>
+            </div>
+            <div class="form-group">
+                <label for="shift">Shift:</label>
+                <input type="number" id="shift" name="shift" value="3" required>
+            </div>
+            <button type="submit" name="action" value="decrypt">Decrypt</button>
+        </form>
+
+        {% if decrypted_text %}
+        <div class="result">
+            <h3>Decrypted Text:</h3>
+            <p>{{ decrypted_text }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p>Caesar Cipher Demo</p>
+    </div>
+</body>
+</html>

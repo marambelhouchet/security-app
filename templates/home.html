@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - {{ username }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 50px;
+            font-size: 2.5em;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        .button-container {
+            margin-top: 30px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.1em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+        }
+
+        .logout-btn:hover {
+            background-color: #e53935;
+        }
+
+        .button-container a {
+            margin: 10px;
+        }
+
+        form {
+            margin-top: 30px;
+        }
+
+        textarea {
+            width: 300px;
+            height: 100px;
+            resize: none;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 40px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #333;
+        }
+
+        em {
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ username }}!</h1>
+    
+    <!-- Encryption Options -->
+    <p>Choose an encryption method:</p>
+    <div class="button-container">
+        <a href="{{ url_for('aes_encrypt_route', username=username) }}">
+            <button>AES Encryption</button>
+        </a>
+        <a href="{{ url_for('caesar_encrypt_route', username=username) }}">
+            <button>Caesar Encryption</button>
+        </a>
+        <a href="{{ url_for('matrix_encryption') }}">
+            <button>Go to Matrix Encryption</button>
+        </a>
+        <a href="{{ url_for('key_vault') }}">
+            <button>Go to Key_Vault</button>
+        </a>
+        <a href="{{ url_for('upload_image') }}">
+            <button>Go to crypt a photo</button>
+        </a>
+    </div>
+
+    <br><br>
+
+    <!-- Message Sending Form -->
+    <form action="{{ url_for('home', username=username) }}" method="POST">
+        <label for="receiver">Send a message to:</label>
+        <input type="text" id="receiver" name="receiver" required><br><br>
+        <textarea name="message" required placeholder="Write your message here..."></textarea><br><br>
+        <button type="submit">Send Message</button>
+    </form>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+    <!-- Button to See Messages Sent to the User -->
+    <div class="button-container">
+        <a href="{{ url_for('view_messages', username=username) }}">
+            <button>See Your Messages</button>
+        </a>
+    </div>
+
+    <br><br>
+
+    <!-- Display Sent/Received Messages -->
+    {% if messages %}
+        <h2>Messages</h2>
+        <ul>
+        {% for msg in messages %}
+            <li><strong>{{ msg[0] }}:</strong> {{ msg[2] }} <em>({{ msg[3] }})</em></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <br><br>
+
+    <!-- Logout Button -->
+    <div class="button-container">
+        <a href="{{ url_for('logout') }}">
+            <button class="logout-btn">Logout</button>
+        </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES Encryption/Decryption</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #0056b3;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 120px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #0056b3;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #003d80;
+        }
+
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .output h2 {
+            margin: 0 0 10px;
+            color: #0056b3;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #ffdddd;
+            color: #d8000c;
+            border: 1px solid #d8000c;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AES Encryption/Decryption</h1>
+
+        {% if message %}
+            <div class="message">{{ message }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <label for="text">Text to Encrypt/Decrypt:</label>
+            <textarea name="text" required>{{ request.form.text }}</textarea>
+
+            <label for="key_length">Key Length:</label>
+            <select name="key_length">
+                <option value="128" {% if request.form.key_length == "128" %}selected{% endif %}>128-bit</option>
+                <option value="192" {% if request.form.key_length == "192" %}selected{% endif %}>192-bit</option>
+                <option value="256" {% if request.form.key_length == "256" %}selected{% endif %}>256-bit</option>
+            </select>
+
+            <div class="button-container">
+                <button type="submit" name="action" value="encrypt">Encrypt</button>
+                <button type="submit" name="action" value="decrypt">Decrypt</button>
+            </div>
+
+            {% if encrypted_text %}
+                <label for="encrypted_text">Encrypted Text:</label>
+                <textarea name="encrypted_text" required>{{ encrypted_text }}</textarea>
+            {% endif %}
+        </form>
+
+        {% if encrypted_text %}
+            <div class="output">
+                <h2>Encrypted Text:</h2>
+                <p>{{ encrypted_text }}</p>
+            </div>
+        {% endif %}
+
+        {% if decrypted_text %}
+            <div class="output">
+                <h2>Decrypted Text:</h2>
+                <p>{{ decrypted_text }}</p>
+            </div>
+        {% endif %}
+
+        {% if key %}
+            <div class="output">
+                <h2>Generated Key:</h2>
+                <p>{{ key }}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

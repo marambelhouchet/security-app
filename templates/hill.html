@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hill Cipher Encryption</title>
+</head>
+<body>
+    <h1>Hill Cipher Encryption and Decryption</h1>
+
+    <h3>Encrypt Text</h3>
+    <form method="POST">
+        <h2>Caesar Cipher for Matrix</h2>
+    
+        <!-- Matrix input -->
+        <label for="a">Matrix Element a:</label>
+        <input type="text" id="a" name="a" value="{{ matrix_values[0][0] if matrix_values else '' }}" required>
+    
+        <label for="b">Matrix Element b:</label>
+        <input type="text" id="b" name="b" value="{{ matrix_values[0][1] if matrix_values else '' }}" required>
+    
+        <label for="c">Matrix Element c:</label>
+        <input type="text" id="c" name="c" value="{{ matrix_values[1][0] if matrix_values else '' }}" required>
+    
+        <label for="d">Matrix Element d:</label>
+        <input type="text" id="d" name="d" value="{{ matrix_values[1][1] if matrix_values else '' }}" required>
+    
+        <!-- Action buttons -->
+        <button type="submit" name="action" value="encrypt">Encrypt</button>
+        <button type="submit" name="action" value="decrypt">Decrypt</button>
+    
+        <!-- Display error message if any -->
+        {% if error_message %}
+            <p style="color: red;">{{ error_message }}</p>
+        {% endif %}
+    </form>
+    
+    {% if encrypted_matrix %}
+        <h3>Encrypted Matrix:</h3>
+        <pre>{{ encrypted_matrix }}</pre>
+    {% endif %}
+    
+    {% if decrypted_matrix %}
+        <h3>Decrypted Matrix:</h3>
+        <pre>{{ decrypted_matrix }}</pre>
+    {% endif %}
+    
+
+</body>
+</html>

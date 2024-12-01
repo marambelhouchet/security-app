@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Messages - {{ username }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 50px;
+            font-size: 2.5em;
+        }
+
+        .message-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin-left: 10%;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .message:last-child {
+            border-bottom: none;
+        }
+
+        .message strong {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .message em {
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        .message p {
+            margin-top: 10px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .button-container {
+            margin-top: 30px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.1em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-btn {
+            background-color: #f44336;
+        }
+
+        .back-btn:hover {
+            background-color: #e53935;
+        }
+
+        /* Styling for the password form */
+        .password-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .password-form input {
+            padding: 10px;
+            font-size: 1.1em;
+            margin: 10px 0;
+            width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .password-form button {
+            background-color: #2196F3;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .password-form button:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        <label for="password">Enter your password to decrypt messages:</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit">Decrypt Messages</button>
+    </form>
+    
+    {% if message_error %}
+        <div class="error">{{ message_error }}</div>
+    {% endif %}
+    
+    <h2>Your Messages</h2>
+    {% if decrypted_messages %}
+        <h3>Decrypted Messages:</h3>
+        <ul>
+        {% for sender, decrypted_message, created_at in decrypted_messages %}
+            <li>
+                <strong>{{ sender }}:</strong> {{ decrypted_message }} <br>
+                <small>Received at: {{ created_at }}</small>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <h3>Encrypted Messages:</h3>
+        <ul>
+        {% for sender, message, encrypted_dek, created_at in messages %}
+            <li>
+                <strong>{{ sender }}:</strong> {{ message }} <br>
+                <small>Received at: {{ created_at }}</small>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    
+    <!-- Back Button -->
+    <div class="button-container">
+        <a href="{{ url_for('home', username=username) }}">
+            <button class="back-btn">Back to Home</button>
+        </a>
+    </div>
+</body>
+</html>
