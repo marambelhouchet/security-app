@@ -1,41 +1,49 @@
-﻿# security-app
- Description générale :
-Ce projet consiste à développer une plateforme web sécurisée en utilisant Flask et Python. L'objectif est de fournir une solution où les utilisateurs peuvent se connecter, interagir et sécuriser leurs données grâce à diverses techniques de cryptage.
+# Security App
 
-Fonctionnalités principales :
+## Project Overview:
+This project is focused on developing a secure web platform using Flask and Python. The goal is to provide a solution where users can securely log in, interact with one another, and protect their data through advanced encryption techniques. The platform integrates state-of-the-art security features that ensure a secure environment for all users.
 
-Authentification et gestion des utilisateurs :
+---
 
-Connexion avec CAPTCHA : Protection contre les bots via un système CAPTCHA intégré.
-Inscription sécurisée : Création de nouveaux comptes avec validation des données.
-Gestion des rôles : Deux types d'utilisateurs sont pris en charge : admin et user.
-Les admins peuvent :
-Ajouter ou supprimer des utilisateurs.
-Attribuer des rôles (admin ou user).
-Envoyer des messages à d'autres utilisateurs.
-Consulter les journaux d'activités (logs).
-Interface utilisateur personnalisée :
+## Key Features
 
-Les admins et les users accèdent à des interfaces spécifiques selon leur rôle.
-Fonctionnalités de cryptage :
+### 1. Authentication and User Management:
+- **Login with CAPTCHA:** A CAPTCHA system integrated into the login process to prevent automated bot attacks.  
+- **Secure Signup:** Allows users to create accounts, with proper validation for their data to ensure secure registration.  
+- **Role Management:** The platform supports two user roles: `admin` and `user`.  
+   - **Admins** have special permissions, such as:
+     - Adding and removing users.
+     - Assigning roles (admin or user).
+     - Sending messages to users.
+     - Viewing activity logs (audit).
 
-Plusieurs algorithmes de cryptage sont intégrés pour protéger les données :
-AES (Advanced Encryption Standard)
-Cryptage d'image
-Matrice de cryptage
-Chiffrement César
-Cryptage des messages avec KEK (Key Encryption Key) et DEK (Data Encryption Key) pour garantir la sécurité.
-Un utilisateur peut consulter ses messages uniquement après avoir entré son mot de passe pour les décrypter.
-Messagerie sécurisée :
+### 2. Customizable User Interface:
+- The platform provides a role-specific interface, with admins and users accessing distinct sections tailored to their needs, making the workflow both secure and intuitive.
 
-Les utilisateurs peuvent envoyer des messages sécurisés entre eux.
-Les messages sont chiffrés et nécessitent une authentification pour être déchiffrés.
-Key Vault :
+### 3. Encryption Functionality:
+- **AES (Advanced Encryption Standard):** A highly secure symmetric encryption algorithm that ensures data protection.  
+- **Image Encryption:** Images are encrypted to protect sensitive visual content.  
+- **Matrix Encryption:** A custom-developed encryption method for securing various types of data.  
+- **Caesar Cipher:** A classic encryption technique used to demonstrate basic cryptographic principles.  
+- **Message Encryption with KEK and DEK:** Ensures secure messaging by using Key Encryption Keys (KEK) and Data Encryption Keys (DEK).  
+   - Users must authenticate themselves with their password to decrypt and view messages.
 
-Les secrets, comme les clés de cryptage, sont stockés dans un Key Vault sécurisé.
-Les utilisateurs peuvent y accéder en fournissant le nom du secret et leur mot de passe.
-Logs et audit :
+### 4. Secure Messaging:
+- Users can send encrypted messages to each other. All messages are encrypted end-to-end and can only be decrypted by the intended recipient after they authenticate with their password.
 
-Les admins peuvent consulter les logs d'activité pour surveiller l'utilisation de la plateforme.
-Résumé technique :
-La plateforme met en œuvre des principes avancés de sécurité cloud, notamment l'utilisation de cryptographie asymétrique et symétrique, la gestion des identités, et le stockage sécurisé des secrets.
+### 5. Key Vault:
+- **Secret Management:** Sensitive information like encryption keys is securely stored in a Key Vault.  
+- Users can access secrets by providing the secret name and their password for decryption, ensuring that keys and sensitive data are kept secure.
+
+### 6. Activity Logs and Auditing:
+- **Admin Logs:** Admins have access to detailed activity logs, allowing them to monitor and audit the usage of the platform for transparency and enhanced security.
+
+---
+
+## Technical Summary  
+The platform incorporates advanced cloud security principles to protect user data, including:  
+- **Asymmetric and Symmetric Cryptography:** Both encryption methods are used to secure sensitive information and communication.  
+- **Identity Management:** Secure authentication mechanisms are in place to ensure that users' identities are properly validated.  
+- **Secret Management:** Encryption keys and other sensitive data are stored securely in a Key Vault.  
+- **Audit Logs:** Admins can track platform activity through logs to ensure security and compliance.
+
