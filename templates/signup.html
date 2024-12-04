@@ -6,6 +6,26 @@
     <title>Signup</title>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        function validateForm(event) {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+
+            const usernameRegex = /^[a-zA-Z0-9_]{4,20}$/; // Alphanumeric, 4-20 characters
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/; // Min 8 chars, 1 letter, 1 number
+
+            let errorMessage = "";
+
+            if (!usernameRegex.test(username)) {
+                errorMessage += "Username must be 4-20 characters long and can only contain letters, numbers, and underscores.\n";
+            }
+
+            if (!passwordRegex.test(password)) {
+                errorMessage += "Password must be at least 8 characters long, including at least one letter and one number.\n";
+            }
+
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -13,14 +33,18 @@
         {% if message %}
             <p class="message">{{ message }}</p>
         {% endif %}
-        <form method="POST" action="/signup">
+        <form method="POST" action="/signup" onsubmit="validateForm(event)">
             <label for="username">Username:</label>
-            <input type="text" name="username" id="username" required>
+            <input type="text" name="username" id="username" required 
+                   minlength="4" maxlength="20" 
+                   pattern="[a-zA-Z0-9_]+" 
+                   title="Username must be 4-20 characters long and can only contain letters, numbers, and underscores.">
             
             <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required>
+            <input type="password" name="password" id="password" required 
+                   minlength="8" 
+                   title="Password must be at least 8 characters long, including at least one letter and one number.">
             
-            <!-- reCAPTCHA widget -->
             <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
 
             <button type="submit">Signup</button>

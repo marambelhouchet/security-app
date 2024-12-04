@@ -17,6 +17,7 @@ import io
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
+import re
 
 # PostgreSQL database configuration
 DATABASE_URL = "postgresql://postgres:DUsNwtpUKvJdToEzIrgIDoBMIYHXjZlZ@junction.proxy.rlwy.net:12055/railway"
@@ -372,8 +373,6 @@ def caesar_encrypt(text, shift):
 def caesar_decrypt(text, shift):
     return ''.join(chr((ord(char) - 32 - shift) % 95 + 32) for char in text)
 
-
-# Routes
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     message = None
@@ -385,6 +384,12 @@ def signup():
 
         if not username or not password:
             message = "Username and password are required."
+        elif len(password) < 6:
+            message = "Password must be at least 6 characters long."
+        elif not re.search(r'[A-Z]', password):
+            message = "Password must contain at least one uppercase letter."
+        elif not re.search(r'[0-9]', password):
+            message = "Password must contain at least one number."
         elif not recaptcha_response or not verify_recaptcha(recaptcha_response):
             message = "reCAPTCHA verification failed. Please try again."
         else:
@@ -405,7 +410,6 @@ def signup():
                 message = f"An error occurred: {e}"
 
     return render_template('signup.html', message=message, recaptcha_site_key=RECAPTCHA_SITE_KEY)
-
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
