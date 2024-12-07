@@ -1,0 +1,236 @@
+/* Global Styles */
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-image: url('https://www.ih2ef.gouv.fr/sites/default/files/styles/banner_1240x350/public/2022-03/illustration-communication-gestion-de-crise-p-riode-sensible-5216.jpeg?h=441f7ddb&itok=uYk4_V14');
+  background-size: cover; /* Ensure the image covers the entire screen */
+  background-position: center; /* Center the image */
+  background-attachment: fixed; /* Make the background image stay fixed while scrolling */
+  font-family: 'Roboto', sans-serif; /* Modern sans-serif font */
+}
+
+/* Projects Container */
+.projects-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 80px 20px 20px;
+}
+
+/* Add Project Button */
+.add-project-button {
+  background: linear-gradient(135deg, #4CAF50, #66BB6A); /* Gradient background */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  cursor: pointer;
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1100;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-project-button:hover {
+  background: linear-gradient(135deg, #45a049, #66b35f); /* Darker gradient on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Change Info Button */
+.change-info-button {
+  background: linear-gradient(135deg, #e548cb, #e881bd); /* Gradient background */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  cursor: pointer;
+  position: fixed;
+  top: 120px;
+  right: 20px;
+  z-index: 1100;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.change-info-button:hover {
+  background: linear-gradient(135deg, #ffc1f5, #ffbbeb); /* Darker gradient on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* New Project Form */
+.add-project-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 400px;
+  max-width: 90%;
+  font-size: 16px;
+  animation: fadeIn 0.5s ease-out; /* Smooth fade-in effect */
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+form input, form textarea, form select, form button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+form input:focus, form textarea:focus, form select:focus {
+  border-color: #4CAF50; /* Highlight input fields */
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+}
+
+form button {
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+form button:hover {
+  background: linear-gradient(135deg, #45a049, #66b35f);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  animation: fadeInOverlay 0.5s ease-out;
+}
+
+@keyframes fadeInOverlay {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Style for each project item */
+.project-item {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 800px;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  font-size: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.project-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.project-item .project-title {
+  font-weight: bold;
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.project-item .project-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.project-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-buttons button {
+  background: transparent;
+  border: none;
+  color: #4CAF50;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.project-buttons button:hover {
+  color: #45a049;
+}
+
+/* Buttons */
+button {
+  padding: 8px 15px;
+  font-size: 10px;
+  background-color: #ce729b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.stats-button {
+  background: linear-gradient(135deg, #ff5722, #ff7043); /* Gradient background */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  cursor: pointer;
+  position: fixed;
+  top: 160px; /* Adjusted to be below the Change Info Button */
+  right: 20px;
+  z-index: 1100;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-button:hover {
+  background: linear-gradient(135deg, #ff3d00, #ff5d3f); /* Darker gradient on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,132 @@
+/* General styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fce4ec; /* Light baby pink background */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+}
+
+/* Wrapper for the page */
+.signup-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  width: 80%; /* Responsive width */
+  padding: 20px;
+}
+
+/* Left Section: Form */
+.signup-form {
+  width: 50%;
+  padding: 20px;
+}
+
+.signup-form h2 {
+  font-size: 32px;
+  color: #e91e63; /* Pink color for heading */
+  margin-bottom: 20px;
+}
+
+.signup-form label {
+  font-size: 16px;
+  margin-bottom: 8px;
+  
+  width:800px;
+}
+
+.signup-form input {
+  width: 80%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #f8bbd0;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.signup-form button {
+  background-color: #e91e63;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.signup-form button:hover {
+  background-color: #d81b60;
+}
+
+.success-message {
+  color: #4caf50;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.signup-form p {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.signup-form .signin-button {
+  background-color: #2196f3;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.signup-form .signin-button a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Right Section: Image */
+.signup-image-container {
+  width: 50%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-image-container img {
+  width: 100%;
+  max-width: 400px; /* Control image size */
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Additional styling for responsive design */
+@media (max-width: 768px) {
+  .signup-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .signup-form, .signup-image-container {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .signup-form button, .signup-form input {
+    width: 100%;
+  }
+}

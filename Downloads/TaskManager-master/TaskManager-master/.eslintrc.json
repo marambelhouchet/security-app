@@ -1,0 +1,14 @@
+{
+    "extends": [
+      "react-app",
+      "eslint:recommended"
+    ],
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "rules": {
+      "no-unused-vars": "warn"
+    }
+  }
+  

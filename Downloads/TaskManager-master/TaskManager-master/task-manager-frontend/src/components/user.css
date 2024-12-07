@@ -1,0 +1,143 @@
+/* General Styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* User Profile Container */
+.user-profile {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 700px;
+}
+
+/* Heading */
+.user-profile h2 {
+  text-align: center;
+  color: #d67b81;
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+/* Error and Success Messages */
+.error-message, .success-message {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: #e74a3b;
+}
+
+.success-message {
+  color: #1cc88a;
+}
+
+/* Form Fields */
+label {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  border-color: #df4e4e;
+  outline: none;
+}
+
+/* Paragraph Text */
+p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+/* Buttons */
+button {
+  padding: 8px 15px;
+  font-size: 16px;
+  background-color: #df4e8f;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #dfb3bb;
+}
+
+button:disabled {
+  background-color: #d6d8db;
+  cursor: not-allowed;
+}
+
+/* Edit Mode Styles */
+button {
+  margin-top: 10px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  display: inline-block;
+  width: calc(100% - 90px); /* Adjust to accommodate the button next to the input */
+}
+
+div {
+  margin-bottom: 20px;
+}
+
+div > button {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+/* Loading State */
+p.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+/* Right Section: Image */
+.user-image-container {
+  width: 50%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 300px;
+  margin-top: -350px;
+}
+
+.user-image-container img {
+  width: 100%;
+  max-width: 400px; /* Control image size */
+  height: auto;
+  border-radius: 10px;
+}
