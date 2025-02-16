@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with LLaMA & Ollama</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        .chat-box { border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: auto; margin-bottom: 10px; background: #fff; border-radius: 5px; }
+        .message { padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .user { background: #d1e7ff; align-self: flex-end; }
+        .bot { background: #e0e0e0; align-self: flex-start; }
+        .input-container { display: flex; gap: 10px; }
+        input, select, button { padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        button { background: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .file-upload { margin-top: 10px; }
+        .progress-container { display: none; width: 100%; background: #ddd; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+        .progress-bar { width: 0%; height: 10px; background: #4CAF50; }
+        .progress-text { text-align: center; font-size: 12px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Chat with AI</h2>
+    <div class="chat-box" id="chat-box"></div>
+
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <select id="model-select">
+            {% for model in models %}
+                <option value="{{ model }}">{{ model }}</option>
+            {% endfor %}
+        </select>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <div class="file-upload">
+        <input type="file" id="file-input">
+        <span id="file-name">No file selected</span>
+    </div>
+
+    <div class="progress-container" id="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+        <div class="progress-text" id="progress-text">0%</div>
+    </div>
+</div>
+
+<script>
+function sendMessage() {
+    let userInput = document.getElementById("user-input").value;
+    let model = document.getElementById("model-select").value;
+    let chatBox = document.getElementById("chat-box");
+    let fileInput = document.getElementById("file-input");
+    let file = fileInput.files[0];
+    let progressBar = document.getElementById("progress-bar");
+    let progressText = document.getElementById("progress-text");
+    let progressContainer = document.getElementById("progress-container");
+
+    if (!userInput.trim()) {
+        alert("Please enter a prompt.");
+        return;
+    }
+
+    let formData = new FormData();
+    formData.append("prompt", userInput);
+    formData.append("model", model);
+    if (file) {
+        formData.append("file", file);
+    }
+
+    // Show user message
+    let userMessage = document.createElement("div");
+    userMessage.classList.add("message", "user");
+    userMessage.innerText = "You: " + userInput;
+    chatBox.appendChild(userMessage);
+    document.getElementById("user-input").value = ""; // Clear input
+
+    // Show progress bar
+    progressContainer.style.display = "block";
+    let progress = 0;
+    let interval = setInterval(() => {
+        if (progress >= 90) {
+            clearInterval(interval);
+        } else {
+            progress += 10;
+            progressBar.style.width = progress + "%";
+            progressText.innerText = progress + "%";
+        }
+    }, 500);
+
+    fetch("/generate", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearInterval(interval);
+        progressBar.style.width = "100%";
+        progressText.innerText = "100%";
+
+        setTimeout(() => {
+            progressContainer.style.display = "none";
+            progressBar.style.width = "0%";
+            progressText.innerText = "0%";
+        }, 1000);
+
+        // Show AI response
+        let botMessage = document.createElement("div");
+        botMessage.classList.add("message", "bot");
+        botMessage.innerText = "Bot: " + data.response;
+        chatBox.appendChild(botMessage);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+
+        // Clear file input
+        if (file) {
+            fileInput.value = "";
+            document.getElementById("file-name").textContent = "No file selected";
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        clearInterval(interval);
+        progressContainer.style.display = "none";
+    });
+}
+
+// File input change event
+document.getElementById("file-input").addEventListener("change", function() {
+    let fileName = this.files.length > 0 ? this.files[0].name : "No file selected";
+    document.getElementById("file-name").textContent = fileName;
+});
+</script>
+
+</body>
+</html>
