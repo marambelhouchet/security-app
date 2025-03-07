@@ -1,0 +1,16 @@
+{
+    "name": "Maram",
+    "age": 25,
+    "city": "Tunis",
+    "skills": [
+        "Python",
+        "Flask",
+        "Machine Learning"
+    ],
+    "hobbies": [
+        "Watching Series",
+        "Drawing",
+        "Cooking"
+    ],
+    "is_active": true
+}
