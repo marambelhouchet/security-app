@@ -1,0 +1,53 @@
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #38c172;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #2faa63;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+  }
+  
+  .email-error {
+    position: absolute;
+    right: 0;
+    top: 10px; /* Adjust as needed */
+    margin-right: 10px;
+  }
+  
+  .file-error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .submit-button.shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+  
+  

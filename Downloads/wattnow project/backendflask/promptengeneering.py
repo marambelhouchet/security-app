@@ -1,0 +1,525 @@
+shared_alert_prompt_fr = """
+Vous êtes un assistant chargé de générer des messages d’alerte sur la consommation énergétique à partir de données structurées. En vous basant sur les champs suivants, générez une alerte professionnelle et concise pour un client :
+
+Champs d'entrée :
+- Nom de l'appareil : {device_label}
+- Valeur mesurée : {measured_value} {unit}
+- Seuil : {threshold} {unit}
+- Pourcentage de dépassement : {overrun_pct}%
+
+
+Respectez exactement la structure suivante :
+1. **Observation initiale** : "Nous avons constaté que la consommation hebdomadaire de {device_label} a  dépassé le seuil, enregistrée à {measured_value} {unit}, contre un seuil de {threshold} {unit}."
+
+2. **Note contextuelle** : "Ce dépassement de {overrun_pct}%, [modeste/important/considérable], pourrait [ne pas indiquer un problème majeur / suggérer un besoin d’ajustements], mais souligne des pistes d’amélioration de l’efficacité énergétique."
+
+3. **Actions recommandées** :
+
+Tonalité : Formelle mais conversationnelle. Le message doit être clair et technique. Évitez d’ajouter du contexte non pertinent ou des informations temporelles.
+"""
+
+shared_alert_prompt_en = """
+You are an assistant that generates energy consumption alert messages using structured input data. Based on the following fields, generate a professional and concise alert for a client:
+
+Input fields:
+- Device label: {device_label}
+- Measured value: {measured_value} {unit}
+- Threshold: {threshold} {unit}
+- Overrun percentage: {overrun_pct}%
+
+Follow this structure exactly:
+1. **Opening Observation**: "We've observed that the weekly consumption for {device_label} exceeded the threshold, registering {measured_value} {unit} compared to the threshold of {threshold} {unit}."
+
+2. **Contextual Note**: "This represents a [modest/notable/significant] overrun of {overrun_pct}%, which may [not necessarily indicate a significant issue/suggest a need for adjustments] but highlights potential efficiency improvements."
+
+3. **Recommended Actions**:
+
+Tone: Formal but conversational. Keep the message clear and technical. Avoid adding unrelated context or timestamp information.
+"""
+
+  
+thdv_prompt_en = """ 
+Generate a structured alert message for elevated Total Harmonic Distortion of Voltage (THDV) using the provided structured fields. Follow this format:  
+
+**Issue**:  
+- The measured THDV value for {device_label} is {measured_value}{unit}, which exceeds the threshold of {threshold}{unit} (e.g., IEEE Standard 519).  
+- Include 1-2 possible root causes (e.g., non-linear loads, aging equipment, voltage imbalances).  
+
+**Machine Context**:  
+- The affected machine/area is "{device_label}".  
+- Compare the current THDV of {measured_value}{unit} to historical norms (e.g., "Normally operates below X%").  
+- Highlight operational risks if unresolved (e.g., equipment overheating, efficiency losses).  
+
+**Immediate Actions**:  
+1. **Priority Action**: Direct the user to a dashboard or tool for real-time data.  
+2. **Equipment Check**: Specific inspection step (e.g., "Test capacitor banks" or "Verify grounding").  
+3. **Load Analysis**: Identify contributing loads/systems (e.g., "Audit VFDs or rectifiers").  
+
+**Next Steps**:  
+- 2 actionable mid/long-term fixes (e.g., "Harmonic filter installation", "Preventive maintenance schedule").  
+- Reference expert intervention if needed (e.g., "Consult power quality specialist").  
+
+Tone: Formal, technical, and solutions-focused. Avoid speculation; emphasize data and actionable steps.  
+"""
+thdv_prompt_fr = """  
+Générez une alerte structurée pour une distorsion harmonique totale de tension (THDT) élevée en utilisant les champs structurés suivants. Suivez ce format :  
+
+**Problème** :  
+- La valeur THDT mesurée pour {device_label} est de {measured_value}{unit}, dépassant le seuil de {threshold}{unit} (ex. : norme IEEE 519).  
+- Indiquez 1 à 2 causes potentielles (ex. : charges non linéaires, équipements vieillissants, déséquilibres de tension).  
+
+**Contexte Machine** :  
+- La machine ou zone concernée est "{device_label}".  
+- Comparez la THDT actuelle de {measured_value}{unit} aux normes historiques (ex. : "Fonctionne normalement en dessous de X%").  
+- Soulignez les risques opérationnels si non résolu (ex. : surchauffe, pertes d'efficacité).  
+
+**Actions Immédiates** :  
+1. **Action Prioritaire** : Diriger l'utilisateur vers un tableau de bord pour des données en temps réel.  
+2. **Vérification Équipement** : Étape d'inspection spécifique (ex. : "Tester les bancs de condensateurs" ou "Vérifier la mise à la terre").  
+3. **Analyse des Charges** : Identifier les charges ou systèmes responsables (ex. : "Auditer les variateurs de fréquence ou redresseurs").  
+
+**Étapes Suivantes** :  
+- 2 solutions actionnables à moyen/long terme (ex. : "Installer des filtres anti-harmoniques", "Planifier un calendrier de maintenance préventive").  
+- Mentionner une intervention experte si nécessaire (ex. : "Consulter un spécialiste en qualité de l'énergie").  
+
+Tonalité : Formelle, technique et orientée solutions. Évitez les spéculations ; privilégiez les données et les actions concrètes.  
+"""
+
+subscribed_power_prompt_en = """
+You are an assistant generating energy alerts for subscribed power threshold exceedances using structured input data. Based on the following fields, generate a professional and concise alert for the client.
+
+Input fields:
+- Device label: {device_label}
+- Measured value: {measured_value} {unit}
+- Subscribed threshold: {threshold} {unit}
+- Overrun percentage: {overrun_pct}%
+
+Follow this structure:
+
+1. **Observation**: "The subscribed power limit for {device_label} has been exceeded. The measured power was {measured_value} {unit}, compared to the subscribed threshold of {threshold} {unit}."
+
+2. **Impact Assessment**: "This indicates an overrun of {overrun_pct}%, which may result in additional demand charges or contractual penalties depending on the utility agreement."
+3. **Immediate Actions**:
+4. **Recommended Actions**: 
+
+Tone: Professional and technical. Avoid timestamps and unrelated information and do not show any calculations .
+"""
+subscribed_power_prompt_fr = """
+Vous êtes un assistant générant des alertes de dépassement de seuil de puissance souscrite à partir de données structurées. En vous basant sur les champs suivants, rédigez une alerte professionnelle et concise pour le client.
+
+Champs d'entrée :
+- Nom de l'appareil : {device_label}
+- Valeur mesurée : {measured_value} {unit}
+- Seuil souscrit : {threshold} {unit}
+- Pourcentage de dépassement : {overrun_pct}%
+
+Structure à suivre :
+
+1. **Observation** : "Le seuil de puissance souscrite pour {device_label} a été dépassé. La puissance mesurée est de {measured_value} {unit}, contre un seuil souscrit de {threshold} {unit}."
+
+2. **Évaluation de l'impact** : "Cela représente un dépassement de {overrun_pct}%, susceptible d'entraîner des frais supplémentaires ou des pénalités contractuelles selon les conditions du fournisseur."
+3.**Actions immédiates** :
+4. **Actions recommandées** :
+
+Tonalité : Professionnelle et technique. Ne pas inclure d'informations temporelles ou non pertinentes et ne pas afficher le calcule .
+"""
+
+day_alert = """
+Generate a formal alert message (no greetings/sign-offs) for abnormal daily energy consumption variations using the provided data. Follow this structure:
+1. Alert Paragraph:
+- Begin with: "We have detected an unusual {variation_type} in daily electricity consumption at {site}."
+- State:
+  - Today’s consumption: {today} {unit}
+  - Previous day’s consumption: {yesterday} {unit}
+  - Threshold for deviation: {threshold} {unit}
+- The variation percentage is {variation_percent}%.
+- Add context (e.g., "This difference, noted between yesterday and today, could be due to equipment usage patterns or operational schedule changes.")
+
+2. Immediate Actions:
+
+3. Recommended Actions:
+
+
+Tone: Formal, concise, and solution-focused. Avoid alarmist language; use headers like Immediate Actions: and Recommended Actions:.
+"""
+day_alert_fr = """
+Générez une alerte formelle (sans salutations ni formules de politesse) pour des variations anormales de la consommation quotidienne d'électricité en utilisant les données suivantes :
+1. Alerte :
+- Commencez par : "Nous avons détecté une {variation_type_fr} inhabituelle de la consommation quotidienne d'électricité sur {site}."
+- Indiquez :
+  - Consommation aujourd'hui : {today} {unit}
+  - Consommation la veille : {yesterday} {unit}
+  - Seuil de déviation : {threshold} {unit}
+- Le pourcentage de variation est de {variation_percent}%.
+- Ajoutez un contexte (ex. : "Cet écart, observé entre hier et aujourd'hui, pourrait être dû à des changements dans l'utilisation des équipements ou dans les plannings opérationnels.")
+
+2. Actions Immédiates :
+
+3. Actions Recommandées :
+
+Tonalité : Formelle, concise et orientée solutions. Évitez les termes alarmistes ; utilisez des en-têtes comme Actions Immédiates : et Actions Recommandées :.
+"""
+cosphi_prompt = """
+Generate a formal, technical alert message (no greetings/bold text) for abnormal Power Factor (Cos φ) values using the provided JSON data. Follow this structure:
+
+1. Alert Statement:
+   - Open with: "The Power Factor (Cos φ) at {site} has dropped to {value}, significantly below the fixed threshold of {threshold}."
+   - Highlight operational/financial consequences (e.g., "This indicates inefficiencies in reactive power management and may lead to penalties").
+
+2. Context:
+   - Explain the significance of the Power Factor (e.g., "An optimal Cos φ close to 1 minimizes reactive energy losses").
+   - Link the deviation to root causes (e.g., inductive loads, capacitor bank failures).
+   - Mention monitoring window: "This deviation was observed between {start_day} {start_hour} and {end_day} {end_hour}."
+
+3. Immediate Actions:
+   - Suggest 2–3 urgent steps (e.g., "Check capacitor banks", "Inspect inductive machines").
+
+4. Recommended Next Steps:
+   - Suggest 2–3 long-term actions (e.g., "Install automatic power factor correction system", "Plan a technical audit").
+
+Tone: Formal, concise, and focused on technical accuracy. Avoid markdown.
+"""
+cosphi_prompt_fr = """
+Générez une alerte technique formelle (sans salutations ni texte en gras) pour des valeurs anormales du Facteur de Puissance (Cos φ) en utilisant les données JSON fournies. Structurez le message comme suit :
+
+1. Déclaration d'Alerte :
+   - Débutez par : "Le Facteur de Puissance (Cos φ) sur {site} est descendu à {value}, se situant nettement en dessous du seuil fixe de {threshold}."
+   - Mentionnez les conséquences opérationnelles/financières (ex. : "Cela indique des inefficacités dans la gestion de l'énergie réactive et peut entraîner des pénalités").
+
+2. Contexte :
+   - Expliquez l'importance du Cos φ (ex. : "Un Cos φ optimal proche de 1 minimise les pertes d'énergie réactive").
+   - Liez la déviation à des causes possibles (ex. : charges inductives, défaillance des bancs de condensateurs).
+   - Mentionnez la période de surveillance : "Cette déviation a été observée entre {start_day} {start_hour} et {end_day} {end_hour}."
+
+3. Actions Immédiates :
+   - Proposez 2–3 étapes urgentes (ex. : "Vérifiez les bancs de condensateurs", "Inspectez les équipements inductifs").
+
+4. Étapes Suivantes Recommandées :
+   - Proposez 2–3 mesures à plus long terme (ex. : "Installer un système automatique de correction du facteur de puissance", "Prévoir un audit technique").
+
+Tonalité : Formelle, concise et techniquement précise. Évitez toute mise en forme markdown.
+"""
+inactive_prompt = """
+Generate a formal alert message (no greetings/bold text) for device inactivity using the provided JSON data. Follow this structure:
+
+1. Alert Statement:
+   - Open with: "Device {label} has been inactive for {duration_minutes} minutes at {site}."
+   - Specify the alert type (e.g., "inactivity") and note potential causes (e.g., power loss, connectivity issues, manual shutdown).
+
+2. Context:
+   - Explain common reasons for inactivity (e.g., "Sudden disconnections may stem from planned maintenance, hardware faults, or network instability").
+
+3. Immediate Actions:
+   - 2-3 urgent steps to diagnose the issue (e.g., "Verify power supply", "Test network connectivity").
+   - Use imperative verbs (e.g., "Check", "Reboot", "Confirm").
+
+4. Recommended Actions if Inactivity Persists:
+   - 2-3 escalations or technical interventions (e.g., "Contact support", "Schedule hardware inspection").
+
+Tone: Professional, concise, and solution-focused. Avoid speculation; emphasize actionable steps. Use headers like 'Context:' and 'Immediate Actions:'.
+"""
+inactive_prompt_fr = """
+Générez un message d'alerte formel (sans salutations ni texte en gras) concernant l’inactivité d’un dispositif à partir des données JSON fournies. Suivez cette structure :
+
+1. Déclaration d'Alerte :
+   - Commencez par : "Le dispositif {label} est inactif depuis {duration_minutes} minutes sur le site {site}."
+   - Précisez le type d'alerte (ex. : "inactivité") et mentionnez les causes possibles (ex. : coupure de courant, problèmes de connectivité, arrêt manuel).
+
+2. Contexte :
+   - Expliquez les causes fréquentes d’inactivité (ex. : "Les déconnexions soudaines peuvent résulter d’une maintenance planifiée, de défaillances matérielles ou d’une instabilité réseau").
+
+3. Actions Immédiates :
+   - Donnez 2 à 3 étapes urgentes pour diagnostiquer le problème (ex. : "Vérifiez l'alimentation", "Testez la connectivité réseau").
+   - Utilisez des verbes impératifs (ex. : "Inspectez", "Redémarrez", "Confirmez").
+
+4. Actions Recommandées si l’Inactivité Persiste :
+   - Proposez 2 à 3 mesures d'escalade ou interventions techniques (ex. : "Contacter le support", "Planifier une inspection matérielle").
+
+Ton : Professionnel, concis et orienté solution. Évitez les spéculations ; privilégiez les étapes concrètes. Utilisez des en-têtes comme 'Contexte :' et 'Actions Immédiates :'.
+"""
+weekly_math = """ 
+You are an assistant that generates energy consumption alert messages using structured input data. Based on the following fields, generate a professional and concise alert for a client:
+
+Input fields:
+- Device label: {device_label}
+- Measured value: {measured_value} {unit}
+- Threshold: {threshold} {unit}
+- Overrun percentage follow this structure to calculate it <calculations>
+Step 1: Subtract the threshold from the measured value:
+    {measured_value} - {threshold} = {measured_value - threshold} {unit}
+
+Step 2: Divide the difference by the threshold to get the overrun ratio:
+    ({measured_value - threshold}) / {threshold} = {overrun_ratio}
+
+Step 3: Convert to percentage:
+    {overrun_ratio} × 100 = {overrun_pct}%
+</calculations>
+
+Follow this structure exactly:
+1. **Opening Observation**: "We've observed that the weekly consumption for {device_label} exceeded the threshold, registering {measured_value} {unit} compared to the threshold of {threshold} {unit}."
+
+2. **Contextual Note**: "This represents a [modest/notable/significant] overrun of give the overrun percentage, which may [not necessarily indicate a significant issue/suggest a need for adjustments] but highlights potential efficiency improvements."
+
+3. **Recommended Actions**:
+
+Tone: Formal but conversational. Keep the message clear and technical. Avoid adding unrelated context or timestamp information.
+"""
+weekly_math_fr = """ 
+Vous êtes un assistant chargé de générer des messages d’alerte sur la consommation d’énergie à partir de données structurées. En vous basant sur les champs suivants, générez une alerte professionnelle et concise destinée à un client :
+
+Champs en entrée :
+- Étiquette de l’appareil : {device_label}
+- Valeur mesurée : {measured_value} {unit}
+- Seuil : {threshold} {unit}
+- Pourcentage de dépassement : suivez cette structure pour le calculer <calculations>
+Étape 1 : Soustraire le seuil de la valeur mesurée :
+    {measured_value} - {threshold} = {measured_value - threshold} {unit}
+
+Étape 2 : Diviser la différence par le seuil pour obtenir le ratio de dépassement :
+    ({measured_value - threshold}) / {threshold} = {overrun_ratio}
+
+Étape 3 : Convertir en pourcentage :
+    {overrun_ratio} × 100 = {overrun_pct}%
+</calculations>
+
+Suivez exactement cette structure :
+1. **Observation initiale** : "Nous avons constaté que la consommation hebdomadaire de {device_label} a dépassé le seuil, atteignant {measured_value} {unit} contre un seuil de {threshold} {unit}."
+
+2. **Note contextuelle** : "Cela représente un dépassement [modéré/remarquable/important] de donnez le pourcentage de dépassement, ce qui peut [ne pas nécessairement indiquer un problème majeur / suggérer un besoin d’ajustements], mais souligne des opportunités potentielles d’amélioration de l’efficacité."
+
+3. **Actions recommandées** :
+
+Ton : Formel mais conversationnel. Le message doit rester clair et technique. Évitez d’ajouter du contexte non pertinent ou des informations temporelles.
+"""
+subscribed_power_prompt_en_math = """
+You are an assistant generating energy alerts for subscribed power threshold exceedances using structured input data. Based on the following fields, generate a professional and concise alert for the client.
+
+Input fields:
+- Device label: {device_label}
+- Measured value: {measured_value} {unit}
+- Subscribed threshold: {threshold} {unit}
+- Overrun percentage: follow this structure to calculate it <calculations>
+Step 1: Subtract the threshold from the measured value:
+    {measured_value} - {threshold} = {measured_value - threshold} {unit}
+
+Step 2: Divide the difference by the threshold to get the overrun ratio:
+    ({measured_value - threshold}) / {threshold} = {overrun_ratio}
+
+Step 3: Convert to percentage:
+    {overrun_ratio} × 100 = {overrun_pct}%
+</calculations>
+
+Follow this structure:
+
+1. **Observation**: "The subscribed power limit for {device_label} has been exceeded. The measured power was {measured_value} {unit}, compared to the subscribed threshold of {threshold} {unit}."
+
+2. **Impact Assessment**: "This indicates an overrun of {overrun_pct}%, which may result in additional demand charges or contractual penalties depending on the utility agreement."
+3. **Immediate Actions**:
+4. **Recommended Actions**: 
+
+Tone: Professional and technical. Avoid timestamps and unrelated information and do not show any calculations .
+"""
+subscribed_power_prompt_fr_math = """
+Vous êtes un assistant générant des alertes de dépassement de seuil de puissance souscrite à partir de données structurées. En vous basant sur les champs suivants, rédigez une alerte professionnelle et concise pour le client.
+
+Champs d'entrée :
+- Nom de l'appareil : {device_label}
+- Valeur mesurée : {measured_value} {unit}
+- Seuil souscrit : {threshold} {unit}
+- Pourcentage de dépassement : suivez cette structure pour le calculer <calculations>
+Étape 1 : Soustraire le seuil de la valeur mesurée :
+    {measured_value} - {threshold} = {measured_value - threshold} {unit}
+
+Étape 2 : Diviser la différence par le seuil pour obtenir le ratio de dépassement :
+    ({measured_value - threshold}) / {threshold} = {overrun_ratio}
+
+Étape 3 : Convertir en pourcentage :
+    {overrun_ratio} × 100 = {overrun_pct}%
+</calculations>
+
+Structure à suivre :
+
+1. **Observation** : "Le seuil de puissance souscrite pour {device_label} a été dépassé. La puissance mesurée est de {measured_value} {unit}, contre un seuil souscrit de {threshold} {unit}."
+
+2. **Évaluation de l'impact** : "Cela représente un dépassement de {overrun_pct}%, susceptible d'entraîner des frais supplémentaires ou des pénalités contractuelles selon les conditions du fournisseur."
+3.**Actions immédiates** :
+4. **Actions recommandées** :
+
+Tonalité : Professionnelle et technique. Ne pas inclure d'informations temporelles ou non pertinentes et ne pas afficher le calcule .
+"""
+
+day_alert_math = """
+Generate a formal alert message (no greetings/sign-offs) for abnormal daily energy consumption variations using the provided data. Follow this structure:
+1. Alert Paragraph:
+- Begin with: "We have detected an unusual {variation_type} in daily electricity consumption at {site}."
+- State:
+  - Today’s consumption: {today} {unit}
+  - Previous day’s consumption: {yesterday} {unit}
+  - Threshold for deviation: {threshold} {unit}
+- The variation percentage is follow this structure to calculate it <calculations>
+Step 1: Subtract the threshold from the measured value:
+    {measured_value} - {threshold} = {measured_value - threshold} {unit}
+
+Step 2: Divide the difference by the threshold to get the overrun ratio:
+    ({measured_value - threshold}) / {threshold} = {overrun_ratio}
+
+Step 3: Convert to percentage:
+    {overrun_ratio} × 100 = {overrun_pct}%
+</calculations>
+- Add context (e.g., "This difference, noted between yesterday and today, could be due to equipment usage patterns or operational schedule changes.")
+
+2. Immediate Actions:
+
+3. Recommended Actions:
+
+
+Tone: Formal, concise, and solution-focused. Avoid alarmist language; use headers like Immediate Actions: and Recommended Actions:.
+"""
+day_alert_fr_math = """
+Générez une alerte formelle (sans salutations ni formules de politesse) pour des variations anormales de la consommation quotidienne d'électricité en utilisant les données suivantes :
+1. Alerte :
+- Commencez par : "Nous avons détecté une {variation_type_fr} inhabituelle de la consommation quotidienne d'électricité sur {site}."
+- Indiquez :
+  - Consommation aujourd'hui : {today} {unit}
+  - Consommation la veille : {yesterday} {unit}
+  - Seuil de déviation : {threshold} {unit}
+- Le pourcentage de variation est de suivez cette structure pour le calculer <calculations>
+Étape 1 : Soustraire le seuil de la valeur mesurée :
+    {measured_value} - {threshold} = {measured_value - threshold} {unit}
+
+Étape 2 : Diviser la différence par le seuil pour obtenir le ratio de dépassement :
+    ({measured_value - threshold}) / {threshold} = {overrun_ratio}
+
+Étape 3 : Convertir en pourcentage :
+    {overrun_ratio} × 100 = {overrun_pct}%
+</calculations>.
+- Ajoutez un contexte (ex. : "Cet écart, observé entre hier et aujourd'hui, pourrait être dû à des changements dans l'utilisation des équipements ou dans les plannings opérationnels.")
+
+2. Actions Immédiates :
+
+3. Actions Recommandées :
+
+Tonalité : Formelle, concise et orientée solutions. Évitez les termes alarmistes ; utilisez des en-têtes comme Actions Immédiates : et Actions Recommandées :.
+"""
+def get_alert_prompt(alert_type: str, model: str) -> dict:
+    """Return predefined prompts for alert types"""
+    prompts = {
+        "Weekly Consumption Alert": {
+            "en": shared_alert_prompt_en,
+            "fr": shared_alert_prompt_fr
+        },
+        "WeekThreshold": {
+            "en": shared_alert_prompt_en,
+            "fr": shared_alert_prompt_fr
+        },
+        "THDV":{
+            "en": thdv_prompt_en,
+            "fr": thdv_prompt_fr
+        },
+        "ExceededThreshold":{
+            "en": thdv_prompt_en,
+            "fr": thdv_prompt_fr
+        },
+        "SubscribedPower":{
+            "en": subscribed_power_prompt_en,
+            "fr": subscribed_power_prompt_fr
+        },
+        "Subscribed Power Exceeded":{
+            "en": subscribed_power_prompt_en,
+            "fr": subscribed_power_prompt_fr
+        },
+        "This Day vs Last Day Alert":{
+            "en": day_alert,
+            "fr": day_alert_fr
+        },
+        "CurrentDayVsLastDay":{
+            "en": day_alert,
+            "fr": day_alert_fr
+        },
+        "Power Factor - Cos Phi": {
+            "en": cosphi_prompt,
+            "fr": cosphi_prompt_fr
+        },
+        "CosphiThreshold": {
+            "en": cosphi_prompt,
+            "fr": cosphi_prompt_fr
+        },
+        "Inactive Device": {
+            "en": inactive_prompt,
+            "fr": inactive_prompt_fr
+        },
+        "ElectricityCuts":{
+            "en": inactive_prompt,
+            "fr": inactive_prompt_fr
+        },
+        "ThisWeekVsLastWeek":{
+            "en": day_alert,
+            "fr": day_alert_fr
+        },
+    }
+    math_prompts = {
+        "Weekly Consumption Alert": {
+            "en": weekly_math,
+            "fr": weekly_math_fr
+        },
+        "WeekThreshold": {
+            "en": weekly_math,
+            "fr": weekly_math_fr
+        },
+        "THDV":{
+            "en": thdv_prompt_en,
+            "fr": thdv_prompt_fr
+        },
+        "ExceededThreshold":{
+            "en": thdv_prompt_en,
+            "fr": thdv_prompt_fr
+        },
+        "SubscribedPower":{
+            "en": subscribed_power_prompt_en_math,
+            "fr": subscribed_power_prompt_fr_math
+        },
+        "Subscribed Power Exceeded":{
+            "en": subscribed_power_prompt_en_math,
+            "fr": subscribed_power_prompt_fr_math
+        },
+        "This Day vs Last Day Alert":{
+            "en": day_alert_fr,
+            "fr": day_alert_fr_math
+        },
+        "CurrentDayVsLastDay":{
+            "en": day_alert_fr,
+            "fr": day_alert_fr_math
+        },
+        "Power Factor - Cos Phi": {
+            "en": cosphi_prompt,
+            "fr": cosphi_prompt_fr
+        },
+        "CosphiThreshold": {
+            "en": cosphi_prompt,
+            "fr": cosphi_prompt_fr
+        },
+        "Inactive Device": {
+            "en": inactive_prompt,
+            "fr": inactive_prompt_fr
+        },
+        "ElectricityCuts":{
+            "en": inactive_prompt,
+            "fr": inactive_prompt_fr
+        },
+        "ThisWeekVsLastWeek":{
+            "en": day_alert,
+            "fr": day_alert_fr
+        },
+      }
+
+    # Merge math prompts with base prompts if the model requires calculations
+    if model.startswith("qwen2-math:latest"):
+        for alert in math_prompts:
+            if alert in prompts:
+                prompts[alert]["en"] = math_prompts[alert].get("en", prompts[alert]["en"])
+                prompts[alert]["fr"] = math_prompts[alert].get("fr", prompts[alert]["fr"])
+            else:
+                prompts[alert] = math_prompts[alert]
+
+    # Return the prompt for the specified alert type
+    return prompts.get(alert_type)
