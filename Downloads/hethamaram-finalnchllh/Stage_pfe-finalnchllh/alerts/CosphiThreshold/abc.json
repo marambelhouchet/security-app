@@ -1,0 +1,34 @@
+{
+    "id": "abc",
+    "device": {
+        "label": "Safran Gainsville Sites"
+    },
+    "type": {
+        "type": "CosphiThreshold",
+        "details": {
+            "unit": null,
+            "measure": "cosphi",
+            "endDate": {
+                "hour": "23:00",
+                "day": "Sunday"
+            },
+            "percentage": null,
+            "Value": "0.72",
+            "detectedAt": "2024-12-02 01:00:50",
+            "threshold": "0.8",
+            "thresholdType": "decresing",
+            "startDate": {
+                "hour": "00:00",
+                "day": "Monday"
+            }
+        }
+    },
+    "status": "Open",
+    "assignedTo": [],
+    "task": null,
+    "comment": null,
+    "createdAt": "2024-12-02 01:00:50",
+    "sensor_group": null,
+    "sensor_type": null,
+    "title": null
+}

@@ -1,0 +1,35 @@
+{
+    "id": "abcd",
+    "device": {
+        "label": "AIR COMPRESSORS"
+    },
+    "type": {
+        "type": "ThisWeekVsLastWeek",
+        "details": {
+            "unit": "kWh",
+            "measure": "energy",
+            "endDate": {
+                "hour": "23:00",
+                "day": "Sunday"
+            },
+            "percentage": "100",
+            "Value": "8622.4",
+            "detectedAt": "2024-12-02 08:00:46",
+            "threshold": "8390.95",
+            "perviousWeekConsumption": "8390.95",
+            "thresholdType": "exceeding",
+            "startDate": {
+                "hour": "00:00",
+                "day": "Monday"
+            }
+        }
+    },
+    "status": "Open",
+    "assignedTo": [],
+    "task": null,
+    "comment": null,
+    "createdAt": "2024-12-02 08:00:46",
+    "sensor_group": null,
+    "sensor_type": null,
+    "title": "N/A"
+}

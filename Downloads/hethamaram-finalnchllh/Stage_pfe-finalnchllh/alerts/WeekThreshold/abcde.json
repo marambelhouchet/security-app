@@ -1,0 +1,34 @@
+{
+    "id": "abcde",
+    "device": {
+        "label": "AIR COMPRESSORS"
+    },
+    "type": {
+        "type": "WeekThreshold",
+        "details": {
+            "unit": "KWH",
+            "measure": "weekly consumption",
+            "endDate": {
+                "hour": "23:00",
+                "day": "Sunday"
+            },
+            "percentage": null,
+            "Value": "8622.4",
+            "detectedAt": "2024-12-02 08:00:46",
+            "threshold": "8310",
+            "thresholdType": "exceeding",
+            "startDate": {
+                "hour": "00:00",
+                "day": "Monday"
+            }
+        }
+    },
+    "status": "Open",
+    "assignedTo": [],
+    "task": null,
+    "comment": null,
+    "createdAt": "2024-12-02 08:00:46",
+    "sensor_group": null,
+    "sensor_type": null,
+    "title": "N/A"
+}

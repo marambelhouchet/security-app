@@ -1,0 +1,119 @@
+.form-section {
+  width: 100%;
+  max-width: 355px;
+  background-color: var(--bg-light);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.1);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  max-height: calc(100vh - 170px);
+  overflow-y: auto;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.form-group label {
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: var(--text-main);
+  font-family: var(--font-family);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.2;
+  font-family: var(--font-family);
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 2px;
+  text-align: left;
+  font-family: var(--font-family);
+}
+
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #38c172;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: var(--font-family);
+}
+
+.submit-button:hover {
+  background-color: var(--light-green);
+}
+
+.email-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.email-tag {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 16px;
+  padding: 4px 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.email-tag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.email-input-container {
+  display: flex;
+  gap: 10px;
+}
+
+.email-input-container input {
+  flex: 1;
+}
+
+.email-input-container button {
+  padding: 8px 12px;
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.email-input-container button:hover {
+  background-color: var(--light-green);
+}
