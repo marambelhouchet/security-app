@@ -74,30 +74,72 @@ def clean_latex(content):
 
 # Function to format content into HTML
 def format_html_content(content):
-    """
-    Convert cleaned content to HTML with proper formatting and preserved tags.
+    """Convert cleaned content to HTML with structured formatting for alerts."""
+    try:
+        # Parse JSON if content is a string representation of JSON
+        if isinstance(content, str):
+            try:
+                import json
+                content = json.loads(content)
+            except json.JSONDecodeError:
+                pass
 
-    Parameters:
-        content (str): The cleaned content.
+        # Handle dictionary format
+        if isinstance(content, dict):
+            formatted_sections = []
+            
+            # Add alert statement
+            if "alertstatement" in content:
+                formatted_sections.append(content["alertstatement"])
+            
+            # Add context
+            if "context" in content:
+                formatted_sections.append(f"\nContext:\n{content['context']}")
+            
+            # Add immediate actions
+            if "immediateactions" in content:
+                actions = content["immediateactions"]
+                if isinstance(actions, list):
+                    actions_text = "\nImmediate Actions:\n" + "\n".join(f"• {action}" for action in actions)
+                else:
+                    actions_text = f"\nImmediate Actions:\n{actions}"
+                formatted_sections.append(actions_text)
+            
+            # Add recommended steps
+            if "recommendednext_steps" in content:
+                steps = content["recommendednext_steps"]
+                if isinstance(steps, list):
+                    steps_text = "\nRecommended Actions:\n" + "\n".join(f"• {step}" for step in steps)
+                else:
+                    steps_text = f"\nRecommended Actions:\n{steps}"
+                formatted_sections.append(steps_text)
+            
+            # Join all sections
+            content = "\n".join(formatted_sections)
 
-    Returns:
-        str: HTML-formatted content.
-    """
-    # Convert newlines to <br> for HTML formatting
-    html = content.replace('\n', '<br>')
+        # Convert newlines to <br> tags
+        html = content.replace('\n', '<br>')
+        
+        # Format bullet points
+        html = re.sub(r'•\s*(.+?)<br>', r'<li>\1</li>', html)
+        html = re.sub(r'<li>(.+?)</li>', r'<ul style="margin: 5px 0;"><li>\1</li></ul>', html)
+        
+        # Format sections
+        html = re.sub(r'Context:<br>', r'<strong>Context:</strong><br>', html)
+        html = re.sub(r'Immediate Actions:<br>', r'<strong>Immediate Actions:</strong><br>', html)
+        html = re.sub(r'Recommended Actions:<br>', r'<strong>Recommended Actions:</strong><br>', html)
+        
+        # Apply general formatting
+        html = re.sub(r'\^(\w+)', r'<sup>\1</sup>', html)  # Superscripts
+        html = re.sub(r'_(\w+)', r'<sub>\1</sub>', html)  # Subscripts
+        html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)  # Bold text
+        
+        return html
 
-    # Handle superscripts and subscripts
-    html = re.sub(r'\^(\w+)', r'<sup>\1</sup>', html)  # Superscripts
-    html = re.sub(r'_(\w+)', r'<sub>\1</sub>', html)  # Subscripts
+    except Exception as e:
+        logging.error(f"Error formatting HTML content: {str(e)}")
+        return str(content)  # Return original content if formatting fails
 
-    # Convert bold patterns (**bold**) to <strong> tags
-    html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)
-
-    # Handle headers (lines starting with ###)
-    html = re.sub(r'<br>###\s*(.+?)<br>', r'<br><strong>\1</strong><br>', html)
-    html = re.sub(r'^###\s*(.+?)<br>', r'<strong>\1</strong><br>', html)  # Line start case
-
-    return html
 LOGO_PATH = r'C:\Users\user\Downloads\wattnow project\logo.png'
 
 # Function to send alert emails

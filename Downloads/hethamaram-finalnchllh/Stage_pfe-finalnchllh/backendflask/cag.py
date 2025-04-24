@@ -91,40 +91,15 @@ def generate_llm_response(model: str, full_prompt: str) -> str:
         logger.error(f"LLM response generation error: {str(e)}")
         return f"Error generating response: {str(e)}"
 
-def clean_prompt_template(template: str) -> str:
-    """Remove recommendation sections from prompt template."""
-    # Pattern to match various forms of recommendation headers
-    patterns = [
-        r'\*\*Actions recommandées\*\*:.*$',
-        r'\*\*Recommended Actions\*\*:.*$',
-        r'\*\*Immediate Actions\*\*:.*$',
-        r'\*\*Actions Immédiates\*\*:.*$',
-        r'\*\*Actions immédiates\*\*:.*$',
-        r'Actions Immédiates:.*$',
-        r'Immediate Actions:.*$',
-        r'\*\*Actions\*\*:.*$',
-        r'\*\*recommendations\*\*:.*$',
-        r'Recommandations:.*$',
-        r'2\.\s*\*\*recommendations\*\*:.*$',  # Numbered section format
-        r'2\.\s*\*\*Recommendations\*\*:.*$'   # Alternative numbered section format
-    ]
-    
-    cleaned = template
-    for pattern in patterns:
-        cleaned = re.sub(pattern, '', cleaned, flags=re.DOTALL | re.IGNORECASE)
-    
-    return cleaned.strip()
-
 def generate_response(model: str, processed_content: dict, alert_type: str, gravity: str, language: str = "en") -> str:    
     try:
         if model not in AVAILABLE_MODELS:
             raise ValueError(f"Model '{model}' not available")
 
-        # Enhanced cache checking with logging
+        # Check cache first
         cached_response = response_cache.get(processed_content)
         if cached_response:
             logger.info(f"Cache hit for alert_type={alert_type}")
-            logger.info("Using cached response instead of generating new one")
             logger.info(f"Cached response preview: {cached_response[:200]}...")
             return cached_response
 
@@ -140,41 +115,63 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
         try:
             # Try RAG first
             rag_context = retrieve_context(alert_type, gravity, language)
-            if rag_context and "No recommendations available." not in rag_context:
-                logger.info(f"RAG successful for alert_type={alert_type}")
-                # Clean prompt template when using RAG
-                cleaned_template = clean_prompt_template(prompt_template)
-                logger.info("Removed recommendation sections from prompt template")
+            
+            # Check if RAG was successful
+            if (rag_context and 
+                "No recommendations available." not in rag_context and 
+                "No high-confidence recommendations" not in rag_context):
                 
-                # Format prompt with RAG context
+                logger.info(f"RAG successful for alert_type={alert_type}")
+                
+                # Remove recommendation section from template
+                patterns = [
+                    r'\*\*Actions recommandées\*\*:.*?(?=\n\n|$)',
+                    r'\*\*Recommended Actions\*\*:.*?(?=\n\n|$)',
+                    r'\*\*Immediate Actions\*\*:.*?(?=\n\n|$)',
+                    r'\*\*Actions Immédiates\*\*:.*?(?=\n\n|$)',
+                    r'\*\*Actions immédiates\*\*:.*?(?=\n\n|$)',
+                    r'Actions Immédiates:.*?(?=\n\n|$)',
+                    r'Immediate Actions:.*?(?=\n\n|$)',
+                    r'\*\*Actions\*\*:.*?(?=\n\n|$)',
+                    r'\*\*recommendations\*\*:.*?(?=\n\n|$)',
+                    r'Recommandations:.*?(?=\n\n|$)',
+                    r'2\.\s*\*\*recommendations\*\*:.*?(?=\n\n|$)',
+                    r'2\.\s*\*\*Recommendations\*\*:.*?(?=\n\n|$)'
+                ]
+                
+                cleaned_template = prompt_template
+                for pattern in patterns:
+                    cleaned_template = re.sub(pattern, '', cleaned_template, flags=re.DOTALL | re.IGNORECASE)
+                
+                # Format prompt with processed content
                 formatted_prompt = cleaned_template.format(**processed_content)
-                full_prompt = f"{formatted_prompt}\n\nRecommendations from similar cases:\n{rag_context}"
-                logger.info("Added RAG context to prompt")
+                
+                # Add RAG recommendations
+                full_prompt = f"{formatted_prompt.strip()}\n\nRecommendations:\n{rag_context}"
+                logger.info("Using RAG recommendations")
             else:
-                # Use original template without RAG
+                # Use original template with LLM-generated recommendations
+                logger.info("Using original template for LLM-generated recommendations")
                 formatted_prompt = prompt_template.format(**processed_content)
                 full_prompt = formatted_prompt
-                logger.info("Using original template (no RAG context available)")
 
             # Generate response
             response = generate_llm_response(model, full_prompt)
             
-            # Cache the new response with additional logging
+            # Cache the response
             response_cache.set(processed_content, response)
-            logger.info(f"Cached new response for alert_type={alert_type}")
             logger.info(f"New response preview: {response[:200]}...")
             
             return response
 
         except Exception as e:
             logger.error(f"RAG retrieval error: {str(e)}")
-            # If RAG fails, use template only
+            # If RAG fails, use original template
             full_prompt = prompt_template.format(**processed_content)
             response = generate_llm_response(model, full_prompt)
             response_cache.set(processed_content, response)
             return response
 
     except Exception as e:
-        # Log error and return error message
         logger.error(f"Response generation failed: {str(e)}")
         return f"Error: {str(e)}"

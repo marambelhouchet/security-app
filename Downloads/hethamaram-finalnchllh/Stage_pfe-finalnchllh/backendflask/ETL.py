@@ -75,29 +75,38 @@ def get_alert_type(alert_data):
     return alert_type
 
 def calculate_percent(value, threshold):
-    """Helper to calculate percentage difference, avoiding division by zero."""
+    """Calculate percentage difference with improved error handling and logging."""
     try:
-        # Convert string inputs to float and add logging
-        value = float(value) if value is not None else None
-        threshold = float(threshold) if threshold is not None else None
-        
-        logging.info(f"Calculating percentage - Value: {value}, Threshold: {threshold}")
-        
+        # Convert string inputs to float with strict validation
         if value is None or threshold is None:
             logging.warning("Value or threshold is None")
-            return 0
+            return None
+            
+        try:
+            value = float(value)
+            threshold = float(threshold)
+        except (ValueError, TypeError) as e:
+            logging.error(f"Invalid number format: {str(e)}")
+            return None
             
         if threshold == 0:
-            logging.warning("Threshold is zero, avoiding division by zero")
-            return 0
+            logging.warning("Threshold is zero, cannot calculate percentage")
+            return None
         
-        percentage = round(((value - threshold) / threshold) * 100, 2)
-        logging.info(f"Calculated percentage: {percentage}%")
-        return percentage
+        # Calculate percentage difference
+        percentage = ((value - threshold) / threshold) * 100
+        rounded_pct = round(percentage, 2)
         
-    except (ValueError, TypeError) as e:
+        logging.info(f"Percentage calculation:")
+        logging.info(f"Value: {value}")
+        logging.info(f"Threshold: {threshold}")
+        logging.info(f"Calculated percentage: {rounded_pct}%")
+        
+        return rounded_pct
+        
+    except Exception as e:
         logging.error(f"Error calculating percentage: {str(e)}")
-        return 0
+        return None
 
 def process_alert_content(alert_type, alert_data):
     """
@@ -123,32 +132,62 @@ def process_alert_content(alert_type, alert_data):
             })
 
         elif alert_type == 'ThisWeekVsLastWeek':
-            value = alert_data.get('Value')
-            threshold = alert_data.get('threshold')
+            # Get values from nested structure correctly
+            type_details = alert_data.get('type', {}).get('details', {})
+            
+            # Try to get values from multiple possible locations
+            current_week = (
+                type_details.get('Value') or 
+                type_details.get('current_week_consumption') or
+                alert_data.get('Value') or 
+                alert_data.get('current_week_consumption') or
+                '0'
+            )
+            
+            previous_week = (
+                type_details.get('threshold') or
+                type_details.get('previous_week_consumption') or
+                alert_data.get('previousWeekConsumption') or
+                alert_data.get('previous_week_consumption') or
+                '0'
+            )
             
             logging.info(f"ThisWeekVsLastWeek - Processing values:")
-            logging.info(f"Current week value: {value}")
-            logging.info(f"Previous week threshold: {threshold}")
+            logging.info(f"Current week value: {current_week}")
+            logging.info(f"Previous week value: {previous_week}")
             
-            weekly_variation = calculate_percent(value, threshold)
+            # Calculate variation
+            weekly_variation = calculate_percent(current_week, previous_week)
             
             processed.update({
                 'type': {'type': alert_data.get('type', {}).get('type')},
-                'previousWeekConsumption': alert_data.get('previousWeekConsumption'),
-                'weekly_variation_percent': weekly_variation
+                'current_week_consumption': current_week,
+                'previous_week_consumption': previous_week,
+                'weekly_variation': weekly_variation
             })
             
             logging.info(f"Calculated weekly variation: {weekly_variation}%")
 
         elif alert_type == 'WeekThreshold':
+            # Get values from type.details or fallback to root level
+            type_details = alert_data.get('type', {}).get('details', {})
+            value = type_details.get('Value') or alert_data.get('Value')
+            threshold = type_details.get('threshold') or alert_data.get('threshold')
+            
+            logging.info(f"WeekThreshold - Processing values:")
+            logging.info(f"Value: {value}")
+            logging.info(f"Threshold: {threshold}")
+            
+            weekly_variation = calculate_percent(value, threshold)
+            logging.info(f"Calculated weekly variation: {weekly_variation}%")
+            
             processed.update({
                 'endDate': {'day': alert_data.get('endDate', {}).get('day')},
                 'startDate': {'day': alert_data.get('startDate', {}).get('day')},
                 'thresholdType': alert_data.get('thresholdType'),
-                'weekly_variation_percent': calculate_percent(
-                    alert_data.get('Value'), 
-                    alert_data.get('threshold')
-                )
+                'Value': value,
+                'threshold': threshold,
+                'weekly_variation_percent': weekly_variation
             })
 
         elif alert_type == 'CosphiThreshold':
@@ -169,9 +208,18 @@ def process_alert_content(alert_type, alert_data):
             })
 
         elif alert_type == 'ElectricityCuts':
+            # Get hold_on from type.details structure
+            type_details = alert_data.get('type', {}).get('details', {})
+            hold_on = type_details.get('hold_on')
+            hold_on_status = type_details.get('hold_on_status')
+            
             processed.update({
-                'hold_on': alert_data.get('hold_on')
+                'hold_on': hold_on,
+                'hold_on_status': hold_on_status,
+                'detectedAt': type_details.get('detectedAt') or alert_data.get('createdAt')
             })
+            
+            logging.info(f"ElectricityCuts - Hold on value: {hold_on}, Status: {hold_on_status}")
 
         elif alert_type == 'CurrentDayVsLastDay':
             yesterday_str = (

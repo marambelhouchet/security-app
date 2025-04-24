@@ -11,7 +11,6 @@ from sentence_transformers import SentenceTransformer
 from chromadb.utils import embedding_functions
 import requests
 from typing import List, Dict
-from datetime import datetime
 
 # ---------------------------
 # Load Environment Variables
@@ -76,19 +75,11 @@ def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
     Synchronize data from MongoDB to ChromaDB with support for different recommendation fields.
     """
     try:
-        # Get total documents count
         total_docs = mongo_collection.count_documents({})
         if total_docs == 0:
             logger.warning("No documents found in MongoDB collection")
             return
 
-        # Get existing documents in ChromaDB
-        existing_count = chroma_collection.count()
-        logger.info(f"Found {total_docs} documents in MongoDB")
-        logger.info(f"Found {existing_count} documents in ChromaDB")
-
-        processed_count = 0
-        synced_count = 0
         logger.info(f"Starting sync of {total_docs} documents from MongoDB to ChromaDB")
 
         for batch_num in range(0, total_docs, batch_size):
@@ -97,11 +88,9 @@ def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
                 break
 
             documents, metadatas, ids = [], [], []
-            batch_processed = 0
 
             for alert in alerts:
                 try:
-                    processed_count += 1
                     # Check for required field 'problem'
                     if 'problem' not in alert:
                         logger.warning(f"Skipping document {alert.get('_id')} - missing problem field")
@@ -141,11 +130,9 @@ def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
                         'source': 'mongodb',
                         'has_immediate': bool(immediate_actions),
                         'has_recommended': bool(recommended_actions),
-                        'has_next_steps': bool(recommended_next_steps),
-                        'sync_timestamp': datetime.now().isoformat()
+                        'has_next_steps': bool(recommended_next_steps)
                     })
                     ids.append(str(alert['_id']))
-                    batch_processed += 1
 
                 except Exception as doc_error:
                     logger.error(f"Error processing document {alert.get('_id')}: {str(doc_error)}")
@@ -157,18 +144,8 @@ def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
                     metadatas=metadatas,
                     ids=ids
                 )
-                synced_count += len(documents)
-                logger.info(f"Processed batch {batch_num//batch_size + 1}: {batch_processed}/{len(alerts)} documents")
-                logger.info(f"Progress: {processed_count}/{total_docs} documents processed")
-                logger.info(f"Successfully synced: {synced_count} documents")
+                logger.info(f"Processed batch {batch_num//batch_size + 1} ({len(documents)} docs)")
 
-        # Final summary
-        final_count = chroma_collection.count()
-        logger.info("=== Sync Summary ===")
-        logger.info(f"Total documents in MongoDB: {total_docs}")
-        logger.info(f"Documents processed: {processed_count}")
-        logger.info(f"Documents successfully synced: {synced_count}")
-        logger.info(f"Final document count in ChromaDB: {final_count}")
         logger.info("MongoDB to ChromaDB sync completed")
 
     except Exception as e:
