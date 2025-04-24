@@ -128,9 +128,10 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
             rag_context = retrieve_context(alert_type, gravity, language)
             logger.debug(f"RAG context length: {len(rag_context) if rag_context else 0}")
             
-            # Check if RAG was successful
+            # Check if RAG was successful and returned valid recommendations
             if (rag_context and 
                 "No recommendations available." not in rag_context and 
+                "No specific recommendations" not in rag_context and
                 "No high-confidence recommendations" not in rag_context):
                 
                 logger.info(f"RAG successful for alert_type={alert_type}")
@@ -163,14 +164,15 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
                 formatted_prompt = cleaned_template.format(**processed_content)
                 
                 # Add RAG recommendations
-                full_prompt = f"{formatted_prompt.strip()}\n\nRecommendations:\n{rag_context}"
+                full_prompt = f"{formatted_prompt.strip()}{rag_context}"
                 logger.info("Using RAG recommendations")
                 logger.debug(f"Final prompt length: {len(full_prompt)}")
             else:
-                logger.info("RAG unsuccessful - using original template")
+                # RAG failed or no recommendations found - use complete original template
+                logger.info("RAG unsuccessful or no recommendations found - using complete original template")
                 formatted_prompt = prompt_template.format(**processed_content)
                 full_prompt = formatted_prompt
-                logger.debug(f"Using original template (length: {len(full_prompt)})")
+                logger.debug(f"Using complete original template (length: {len(full_prompt)})")
 
             # Generate response
             logger.info(f"Generating response using {model}")
@@ -186,7 +188,7 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
 
         except Exception as e:
             logger.error(f"RAG retrieval error: {str(e)}", exc_info=True)
-            logger.info("Falling back to original template")
+            logger.info("Falling back to complete original template")
             full_prompt = prompt_template.format(**processed_content)
             response = generate_llm_response(model, full_prompt)
             response_cache.set(processed_content, response)

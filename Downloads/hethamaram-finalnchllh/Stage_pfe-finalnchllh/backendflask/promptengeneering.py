@@ -27,9 +27,9 @@ Input fields:
 - Overrun percentage: {weekly_variation_percent}%
 
 Follow this structure exactly:
-**Opening Observation**: "We've observed that the weekly consumption for {device} exceeded the threshold, registering {Value} {unit} compared to the threshold of {threshold} {unit}."
+We've observed that the weekly consumption for {device} exceeded the threshold, registering {Value} {unit} compared to the threshold of {threshold} {unit}.
 This represents a [modest/notable/significant] overrun of {weekly_variation_percent}%, which may [not necessarily indicate a significant issue/suggest a need for adjustments] but highlights potential efficiency improvements.
-**Recommended Actions**:
+**Recommended Actions**(give recommendations based on this case):
 """
 
 thdv_prompt_en = """ 
