@@ -47,7 +47,7 @@ Generate a structured alert message for elevated Total Harmonic Distortion of Vo
 - Include 1-2 possible root causes (e.g., non-linear loads, aging equipment, voltage imbalances).  
 
 **Machine Context**:  
-- The affected machine/area is "{device_label}".  
+- The affected machine/area is "{device}".  
 - Compare the current THDV of {Value}{unit} to historical norms .
 - Highlight operational risks if unresolved (e.g., equipment overheating, efficiency losses).  
 
@@ -66,11 +66,11 @@ thdv_prompt_fr = """
 Générez une alerte structurée pour une distorsion harmonique totale de tension (THDT) élevée en utilisant les champs structurés suivants. Suivez ce format :  
 
 **Problème** :  
-- La valeur THDV mesurée pour {device_label} est de {Value}{unit}, dépassant le seuil de {threshold}{unit} (ex. : norme IEEE 519).  
+- La valeur THDV mesurée pour {device} est de {Value}{unit}, dépassant le seuil de {threshold}{unit} (ex. : norme IEEE 519).  
 - Indiquez 1 à 2 causes potentielles (ex. : charges non linéaires, équipements vieillissants, déséquilibres de tension).  
 
 **Contexte Machine** :  
-- La machine ou zone concernée est "{device_label}".  
+- La machine ou zone concernée est "{device}".  
 - Comparez la THDT actuelle de {Value}{unit} aux normes historiques (ex. : "Fonctionne normalement en dessous de X%").  
 - Soulignez les risques opérationnels si non résolu (ex. : surchauffe, pertes d'efficacité).  
 
