@@ -72,8 +72,7 @@ embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
 # ---------------------------
 def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
     """
-    Synchronize data from MongoDB to ChromaDB with batching and error handling.
-    Normalizes field names and text content.
+    Synchronize data from MongoDB to ChromaDB with support for different recommendation fields.
     """
     try:
         total_docs = mongo_collection.count_documents({})
@@ -92,27 +91,49 @@ def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
 
             for alert in alerts:
                 try:
-                    # Required fields check, making `immediate_actions` optional
-                    if not all(k in alert for k in ['problem', 'gravity']):
-                        logger.warning(f"Skipping document {alert.get('_id')} - missing fields")
+                    # Check for required field 'problem'
+                    if 'problem' not in alert:
+                        logger.warning(f"Skipping document {alert.get('_id')} - missing problem field")
                         continue
 
-                    # Get immediate actions with a default if missing
-                    immediate = alert.get('immediate_actions', 'N/A')
+                    # Collect all types of actions/recommendations
+                    immediate_actions = alert.get('immediate_actions', [])
+                    if isinstance(immediate_actions, list):
+                        immediate_actions = "\n".join(f"- {action}" for action in immediate_actions)
+                    
+                    recommended_actions = alert.get('recommended_actions', [])
+                    if isinstance(recommended_actions, list):
+                        recommended_actions = "\n".join(f"- {action}" for action in recommended_actions)
+                    
+                    recommended_next_steps = alert.get('recommended_next_steps', [])
+                    if isinstance(recommended_next_steps, list):
+                        recommended_next_steps = "\n".join(f"- {step}" for step in recommended_next_steps)
 
-                    # Normalize recommended actions
-                    recommended = alert.get('recommended_next_steps') or alert.get('recommended_actions') or ""
+                    # Construct comprehensive text field
+                    text_parts = [f"Problem: {alert['problem']}"]
+                    
+                    if immediate_actions:
+                        text_parts.append(f"Immediate Actions:\n{immediate_actions}")
+                    
+                    if recommended_actions:
+                        text_parts.append(f"Recommended Actions:\n{recommended_actions}")
+                    
+                    if recommended_next_steps:
+                        text_parts.append(f"Recommended Next Steps:\n{recommended_next_steps}")
 
-                    # Construct a single text field
-                    text = f"Problem: {alert['problem']}\nImmediate Actions: {immediate}\nRecommended Actions: {recommended}"
+                    text = "\n\n".join(text_parts)
 
                     documents.append(text)
                     metadatas.append({
-                        'gravity': alert['gravity'],
+                        'gravity': alert.get('gravity', 'Moderate'),
                         'language': alert.get('language', 'en'),
-                        'source': 'mongodb'
+                        'source': 'mongodb',
+                        'has_immediate': bool(immediate_actions),
+                        'has_recommended': bool(recommended_actions),
+                        'has_next_steps': bool(recommended_next_steps)
                     })
                     ids.append(str(alert['_id']))
+
                 except Exception as doc_error:
                     logger.error(f"Error processing document {alert.get('_id')}: {str(doc_error)}")
                     continue
@@ -132,9 +153,9 @@ def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
         raise
 
 def retrieve_context(alert_type: str, gravity: str, language: str = "en") -> str:
-
-    """Retrieve context from ChromaDB using gravity and language filtering"""
+    """Retrieve context from ChromaDB with enhanced recommendation handling"""
     try:
+        logger.info(f"Retrieving context for: type={alert_type}, gravity={gravity}, lang={language}")
         alert_embedding = embedding_model.encode(alert_type).tolist()
 
         results = chroma_collection.query(
@@ -154,21 +175,35 @@ def retrieve_context(alert_type: str, gravity: str, language: str = "en") -> str
 
         recommendations = []
         for doc, metadata, distance in zip(results["documents"][0], 
-                                           results["metadatas"][0], 
-                                           results["distances"][0]):
+                                         results["metadatas"][0], 
+                                         results["distances"][0]):
             confidence = 1 - distance
             if confidence >= 0.7:
-                rec_text = (
-                    f"Recommendation (Confidence: {confidence:.2f}):\n{doc}\n"
-                    f"Source: {metadata.get('source', 'unknown')}\n"
-                )
+                # Parse the document to extract different sections
+                sections = doc.split('\n\n')
+                formatted_sections = []
+                
+                for section in sections:
+                    if section.startswith('Problem:'):
+                        formatted_sections.append(f"Similar Situation ({confidence:.2f}% match):\n{section}")
+                    elif section.startswith('Immediate Actions:'):
+                        formatted_sections.append(f"Suggested Immediate Actions:\n{section}")
+                    elif section.startswith('Recommended Actions:') or section.startswith('Recommended Next Steps:'):
+                        formatted_sections.append(f"Recommended Follow-up:\n{section}")
+                
+                rec_text = '\n\n'.join(formatted_sections)
                 recommendations.append(rec_text)
 
-        return "\n\n".join(recommendations) if recommendations else "No high-confidence recommendations."
+        if recommendations:
+            logger.info(f"Found {len(recommendations)} relevant recommendations")
+            return "\n\n---\n\n".join(recommendations)
+        else:
+            logger.warning("No high-confidence recommendations found")
+            return "No high-confidence recommendations available for this situation."
 
     except Exception as e:
         logger.error(f"Context retrieval error: {str(e)}")
-        return "Error retrieving recommendations."
+        return f"Error retrieving recommendations: {str(e)}"
 
 
 # ---------------------------

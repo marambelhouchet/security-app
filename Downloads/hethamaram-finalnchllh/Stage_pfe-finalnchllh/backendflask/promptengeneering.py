@@ -15,9 +15,7 @@ Respectez exactement la structure suivante :
 
 2. **Note contextuelle** : "Ce dépassement de {weekly_variation_percent}%, [modeste/important/considérable], pourrait [ne pas indiquer un problème majeur / suggérer un besoin d’ajustements], mais souligne des pistes d’amélioration de l’efficacité énergétique."
 
-3. **Actions recommandées** :
-
-Tonalité : Formelle mais conversationnelle. Le message doit être clair et technique. Évitez d’ajouter du contexte non pertinent ou des informations temporelles.
+3. **Actions recommandées**(if there is no rag) :
 """
 
 shared_alert_prompt_en = """
@@ -34,9 +32,7 @@ Follow this structure exactly:
 
 2. **Contextual Note**: "This represents a [modest/notable/significant] overrun of {weekly_variation_percent}%, which may [not necessarily indicate a significant issue/suggest a need for adjustments] but highlights potential efficiency improvements."
 
-3. **Recommended Actions**:
-
-Tone: Formal but conversational. Keep the message clear and technical. Avoid adding unrelated context or timestamp information.
+3. **Recommended Actions**(si il y'a pas de rag):
 """
 
 thdv_prompt_en = """ 
@@ -51,16 +47,14 @@ Generate a structured alert message for elevated Total Harmonic Distortion of Vo
 - Compare the current THDV of {Value}{unit} to historical norms .
 - Highlight operational risks if unresolved (e.g., equipment overheating, efficiency losses).  
 
-**Immediate Actions**:  
+**Immediate Actions**(if there is no rag):  
 1. **Priority Action**: Direct the user to a dashboard or tool for real-time data.  
 2. **Equipment Check**: Specific inspection step (e.g., "Test capacitor banks" or "Verify grounding").  
 3. **Load Analysis**: Identify contributing loads/systems (e.g., "Audit VFDs or rectifiers").  
 
-**Next Steps**:  
+**Next Steps**(if there is no rag):  
 - 2 actionable mid/long-term fixes (e.g., "Harmonic filter installation", "Preventive maintenance schedule").  
 - Reference expert intervention if needed (e.g., "Consult power quality specialist").  
-
-Tone: Formal, technical, and solutions-focused. Avoid speculation; emphasize data and actionable steps.  
 """
 thdv_prompt_fr = """  
 Générez une alerte structurée pour une distorsion harmonique totale de tension (THDT) élevée en utilisant les champs structurés suivants. Suivez ce format :  
@@ -74,16 +68,14 @@ Générez une alerte structurée pour une distorsion harmonique totale de tensio
 - Comparez la THDT actuelle de {Value}{unit} aux normes historiques (ex. : "Fonctionne normalement en dessous de X%").  
 - Soulignez les risques opérationnels si non résolu (ex. : surchauffe, pertes d'efficacité).  
 
-**Actions Immédiates** :  
+**Actions Immédiates** (si il y'a pas de rag):  
 1. **Action Prioritaire** : Diriger l'utilisateur vers un tableau de bord pour des données en temps réel.  
 2. **Vérification Équipement** : Étape d'inspection spécifique (ex. : "Tester les bancs de condensateurs" ou "Vérifier la mise à la terre").  
 3. **Analyse des Charges** : Identifier les charges ou systèmes responsables (ex. : "Auditer les variateurs de fréquence ou redresseurs").  
 
-**Étapes Suivantes** :  
+**Étapes Suivantes**(si il y'a pas de rag) :  
 - 2 solutions actionnables à moyen/long terme (ex. : "Installer des filtres anti-harmoniques", "Planifier un calendrier de maintenance préventive").  
 - Mentionner une intervention experte si nécessaire (ex. : "Consulter un spécialiste en qualité de l'énergie").  
-
-Tonalité : Formelle, technique et orientée solutions. Évitez les spéculations ; privilégiez les données et les actions concrètes.  
 """
 
 subscribed_power_prompt_en = """
@@ -100,17 +92,15 @@ Follow this structure:
 1. **Observation**: "The subscribed power limit for {device} has been exceeded. The measured power was {Value} {unit}, compared to the subscribed threshold of {threshold} {unit}."
 
 2. **Impact Assessment**: "This indicates an overrun of {overrun_pct}%, which may result in additional demand charges or contractual penalties depending on the utility agreement."
-3. **Immediate Actions**:
-4. **Recommended Actions**: 
-
-Tone: Professional and technical. Avoid timestamps and unrelated information and do not show any calculations .
+3. **Immediate Actions**(if there is no rag):
+4. **Recommended Actions**(if there is no rag): 
 """
 subscribed_power_prompt_fr = """
 Vous êtes un assistant générant des alertes de dépassement de seuil de puissance souscrite à partir de données structurées. En vous basant sur les champs suivants, rédigez une alerte professionnelle et concise pour le client.
 
 Champs d'entrée :
 - Nom de l'appareil : {device}
-- Valeur mesurée : {measured_value} {unit}
+- Valeur mesurée : {Value} {unit}
 - Seuil souscrit : {threshold} {unit}
 - Pourcentage de dépassement : {overrun_pct}%
 
@@ -119,10 +109,8 @@ Structure à suivre :
 1. **Observation** : "Le seuil de puissance souscrite pour {device} a été dépassé. La puissance mesurée est de {Value} {unit}, contre un seuil souscrit de {threshold} {unit}."
 
 2. **Évaluation de l'impact** : "Cela représente un dépassement de {overrun_pct}%, susceptible d'entraîner des frais supplémentaires ou des pénalités contractuelles selon les conditions du fournisseur."
-3. **Actions immédiates** :
-4. **Actions recommandées** :
-
-Tonalité : Professionnelle et technique. Ne pas inclure d'informations temporelles ou non pertinentes et ne pas afficher le calcul .
+3. **Actions immédiates** (si il y'a pas de rag):
+4. **Actions recommandées**(si il y'a pas de rag) :
 """
 
 day_alert = """
@@ -136,12 +124,9 @@ Generate a formal alert message (no greetings/sign-offs) for abnormal daily ener
 - The variation percentage is {variation_percent}%.
 - Add context (e.g., "This difference, noted between yesterday and today, could be due to equipment usage patterns or operational schedule changes.")
 
-2. Immediate Actions:
+2. Immediate Actions(if there is no rag):
 
-3. Recommended Actions:
-
-
-Tone: Formal, concise, and solution-focused. Avoid alarmist language; use headers like Immediate Actions: and Recommended Actions:.
+3. Recommended Actions(if there is no rag):
 """
 day_alert_fr = """
 Générez une alerte formelle (sans salutations ni formules de politesse) pour des variations anormales de la consommation quotidienne d'électricité en utilisant les données suivantes :
@@ -153,11 +138,9 @@ Générez une alerte formelle (sans salutations ni formules de politesse) pour d
 - Le pourcentage de variation est de {variation_percent}%.
 - Ajoutez un contexte (ex. : "Cet écart, observé entre hier et aujourd'hui, pourrait être dû à des changements dans l'utilisation des équipements ou dans les plannings opérationnels.")
 
-2. Actions Immédiates :
+2. Actions Immédiates (si il y'a pas de rag) :
 
-3. Actions Recommandées :
-
-Tonalité : Formelle, concise et orientée solutions. Évitez les termes alarmistes ; utilisez des en-têtes comme Actions Immédiates : et Actions Recommandées :.
+3. Actions Recommandées (si il y'a pas de rag) :
 """
 cosphi_prompt = """
 Generate a formal, technical alert message (no greetings/bold text) for abnormal Power Factor (Cos φ) values using the provided JSON data. Follow this structure:
@@ -171,14 +154,11 @@ Generate a formal, technical alert message (no greetings/bold text) for abnormal
    - Link the deviation to root causes (e.g., inductive loads, capacitor bank failures).
    - Mention monitoring window: "This deviation was observed at {detectedAt}."
 
-3. Immediate Actions:
+3. Immediate Actions:(if there is no rag)
    - Suggest 2–3 urgent steps (e.g., "Check capacitor banks", "Inspect inductive machines").
 
-4. Recommended Next Steps:
-   - Suggest 2–3 long-term actions (e.g., "Install automatic power factor correction system", "Plan a technical audit").
-
-Tone: Formal, concise, and focused on technical accuracy. Avoid markdown.
-"""
+4. Recommended Next Steps:(if there is no rag)
+   - Suggest 2–3 long-term actions (e.g., "Install automatic power factor correction system", "Plan a technical audit")."""
 cosphi_prompt_fr = """
 Générez une alerte technique formelle (sans salutations ni texte en gras) pour des valeurs anormales du Facteur de Puissance (Cos φ) en utilisant les données JSON fournies. Structurez le message comme suit :
 
@@ -191,13 +171,11 @@ Générez une alerte technique formelle (sans salutations ni texte en gras) pour
    - Liez la déviation à des causes possibles (ex. : charges inductives, défaillance des bancs de condensateurs).
    - Mentionnez la période de surveillance : "Cette déviation a été observée à {detectedAt}."
 
-3. Actions Immédiates :
+3. Actions Immédiates :(si il y'a pas de rag)
    - Proposez 2–3 étapes urgentes (ex. : "Vérifiez les bancs de condensateurs", "Inspectez les équipements inductifs").
 
-4. Étapes Suivantes Recommandées :
+4. Étapes Suivantes Recommandées :(si il y'a pas de rag)
    - Proposez 2–3 mesures à plus long terme (ex. : "Installer un système automatique de correction du facteur de puissance", "Prévoir un audit technique").
-
-Tonalité : Formelle, concise et techniquement précise. Évitez toute mise en forme markdown.
 """
 
 inactive_prompt = """
@@ -210,14 +188,12 @@ Generate a formal alert message (no greetings/bold text) for device inactivity u
 2. Context:
    - Explain common reasons for inactivity (e.g., "Sudden disconnections may stem from planned maintenance, hardware faults, or network instability").
 
-3. Immediate Actions:
+3. Immediate Actions:(if there is no rag)
    - 2-3 urgent steps to diagnose the issue (e.g., "Verify power supply", "Test network connectivity").
    - Use imperative verbs (e.g., "Check", "Reboot", "Confirm").
 
-4. Recommended Actions if Inactivity Persists:
+4. Recommended Actions if Inactivity Persists:(if there is no rag)
    - 2-3 escalations or technical interventions (e.g., "Contact support", "Schedule hardware inspection").
-
-Tone: Professional, concise, and solution-focused. Avoid speculation; emphasize actionable steps. Use headers like 'Context:' and 'Immediate Actions:'.
 """
 inactive_prompt_fr = """
 Générez un message d'alerte formel (sans salutations ni texte en gras) concernant l’inactivité d’un dispositif à partir des données JSON fournies. Suivez cette structure :
@@ -229,14 +205,12 @@ Générez un message d'alerte formel (sans salutations ni texte en gras) concern
 2. Contexte :
    - Expliquez les causes fréquentes d’inactivité (ex. : "Les déconnexions soudaines peuvent résulter d’une maintenance planifiée, de défaillances matérielles ou d’une instabilité réseau").
 
-3. Actions Immédiates :
+3. Actions Immédiates :(si il y'a pas de rag)
    - Donnez 2 à 3 étapes urgentes pour diagnostiquer le problème (ex. : "Vérifiez l'alimentation", "Testez la connectivité réseau").
    - Utilisez des verbes impératifs (ex. : "Inspectez", "Redémarrez", "Confirmez").
 
-4. Actions Recommandées si l’Inactivité Persiste :
+4. Actions Recommandées si l’Inactivité Persiste :(si il y'a pas de rag)
    - Proposez 2 à 3 mesures d'escalade ou interventions techniques (ex. : "Contacter le support", "Planifier une inspection matérielle").
-
-Ton : Professionnel, concis et orienté solution. Évitez les spéculations ; privilégiez les étapes concrètes. Utilisez des en-têtes comme 'Contexte :' et 'Actions Immédiates :'.
 """
 
 weekly_math = """ 
@@ -255,9 +229,7 @@ Generate a professional alert by following this structure :
 
 2. **Contextual Note**: "This {overrun_pct}% overrun suggests potential efficiency improvements in energy usage patterns."
 
-3. **Recommended Actions**:
-
-Tone: Formal but conversational. Keep technical. Avoid timestamps.
+3. **Recommended Actions**:(if there is no rag)
 """
 weekly_math_fr = """ 
 Vous êtes un assistant chargé de générer des messages d’alerte sur la consommation d’énergie à partir de données structurées :
@@ -270,14 +242,11 @@ En utilisant ces données :
   Étape 1 : {Value} - {threshold} = {difference} {unit}
   Étape 2 : ({difference}/{threshold}) × 100 = {overrun_pct}%
 génnérer une alerte  professionnelle en suivant cette structure :
-Structure :
 1. **Observation** : "Dépassement hebdomadaire sur {device} : {Value} {unit} contre seuil {threshold} {unit}"
 
 2. **Analyse** : "Dépassement de {overrun_pct}% indiquant des opportunités d'optimisation énergétique"
 
-3. **Actions Recommandées** :
-
-Ton : Professionnel et technique. Pas de détails temporels.
+3. **Actions Recommandées**(si il y'a pas de rag) :
 """
 
 subscribed_power_prompt_en_math = """
@@ -293,10 +262,8 @@ Using this data :
 Generate a professional alert by following this structure :
 1. **Alert**: "{device} exceeded power limit: {Value} {unit} > {threshold} {unit}"
 2. **Impact**: "{overrun_pct}% overrun may incur contractual penalties"
-3. **Immediate Actions**:
-4. **Long-term Solutions**: 
-
-Tone: Technical/formal. No calculations shown.
+3. **Immediate Actions**(if there is no rag):
+4. **Long-term Solutions**(if there is no rag): 
 """
 subscribed_power_prompt_fr_math = """
 En utilisant ces données :
@@ -311,10 +278,8 @@ En utilisant ces données :
 génnérer une alerte  professionnelle en suivant cette structure :
 1. **Alerte** : "Dépassement sur {device} : {Value} {unit} > {threshold} {unit}"
 2. **Conséquences** : "Dépassement de {overrun_pct}% risquant des pénalités contractuelles"
-3. **Actions Immédiates** :
-4. **Solutions Durables** :
-
-Tonalité : Professionnelle. Masquer les calculs.
+3. **Actions Immédiates** (si il y'a pas de rag):
+4. **Solutions Durables**(si il y'a pas de rag) :
 """
 
 day_alert_math = """
@@ -333,9 +298,7 @@ Generate daily consumption alert by following this structure :
    - Today: {today_consumption} {unit}
    - Yesterday: {yesterday_consumption} {unit}
    - Variation: {variation_percent}%
-3. **Actions**:
-
-Tone: Technical, solution-focused. Use headers as shown.
+3. **Actions**(if there is no rag)(if there is no rag):
 """
 day_alert_fr_math = """
 En utilisant ces données :
@@ -353,9 +316,7 @@ génnérer une alerte  professionnelle en suivant cette structure :
    - Aujourd'hui : {today_consumption} {unit}
    - Hier : {yesterday_consumption} {unit}
    - Variation : {variation_percent}%
-3. **Actions** :
-
-Tonalité : Technique avec structure fixe.
+3. **Actions**(si il y'a pas de rag) :
 """
 
 ThisWeekVsLastWeek_alert_math = """ 
@@ -385,11 +346,7 @@ Previous: {previousWeekConsumption} {unit}
 
 Variation: {variation_percent}%
 
-Actions:
-
-Tone: Professional with clearly marked sections.
-
-Let me know if you want it applied to a specific dataset!
+Actions (if there is no rag):
 """
 ThisWeekVsLastWeek_alert_fr_math = """
 En utilisant ces données :
@@ -408,9 +365,7 @@ génnérer une alerte hebdomadaire  professionnelle en suivant cette structure :
    - Actuelle : {Value} {unit}
    - Précédente : {previousWeekConsumption} {unit}
    - Variation : {variation_percent}%
-3. **Actions** :
-
-Tonalité : Professionnelle avec sections marquées.
+3. **Actions**(si il y'a pas de rag) :
 """
 
 ThisWeekVsLastWeek_alert = """ 
@@ -420,7 +375,7 @@ We've observed that the weekly consumption for {device} slightly exceeded ( or d
 threshold, registering {Value} {unit} compared to the threshold of {threshold} {unit}. This represents a
 overrun of {weekly_variation_percent}% , which may not necessarily indicate a significant issue ( or not selon the case ), but suggests an
 potential area for efficiency improvements.
-2. **recommendations**( give recommendations ) :
+2. **recommendations**( give recommendations if there is no rag ) :
 """
 ThisWeekVsLastWeek_alert_fr = """
 Générer un message d'alerte formel et technique (sans salutations ni texte en gras) concernant la consommation hebdomadaire, en utilisant les données JSON fournies. Suivre la structure suivante :
@@ -428,7 +383,7 @@ Générer un message d'alerte formel et technique (sans salutations ni texte en 
 Contexte de l’alerte :
 Nous avons observé que la consommation hebdomadaire de {device} a légèrement dépassé (ou diminué par rapport à) le seuil, enregistrant {value} {unit} contre un seuil de {threshold} {unit}. Cela représente un écart de {weekly_variation_percent}%, ce qui ne constitue pas nécessairement un problème significatif (ou non selon le cas), mais suggère un domaine potentiel d’amélioration de l’efficacité.
 
-Recommandations (fournir des recommandations) :
+Recommandations (fournir des recommandations si il y'a pas de rag) :
 """
 def get_alert_prompt(alert_type: str, model: str, alert_data: dict = None) -> dict:
     """Return predefined prompts for alert types"""

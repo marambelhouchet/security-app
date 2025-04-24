@@ -118,7 +118,7 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
                 logger.info(f"RAG successful for alert_type={alert_type}")
                 # Format prompt with RAG context
                 formatted_prompt = prompt_template.format(**processed_content)
-                full_prompt = f"{formatted_prompt}\n\nContextual Recommendations:\n{rag_context}"
+                full_prompt = f"{formatted_prompt}{rag_context}"
             else:
                 # Use template without RAG
                 full_prompt = prompt_template.format(**processed_content)
