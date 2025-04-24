@@ -91,10 +91,42 @@ def generate_llm_response(model: str, full_prompt: str) -> str:
         logger.error(f"LLM response generation error: {str(e)}")
         return f"Error generating response: {str(e)}"
 
+def clean_prompt_template(template: str) -> str:
+    """Remove recommendation sections from prompt template."""
+    # Pattern to match various forms of recommendation headers
+    patterns = [
+        r'\*\*Actions recommandées\*\*:.*$',
+        r'\*\*Recommended Actions\*\*:.*$',
+        r'\*\*Immediate Actions\*\*:.*$',
+        r'\*\*Actions Immédiates\*\*:.*$',
+        r'\*\*Actions immédiates\*\*:.*$',
+        r'Actions Immédiates:.*$',
+        r'Immediate Actions:.*$',
+        r'\*\*Actions\*\*:.*$',
+        r'\*\*recommendations\*\*:.*$',
+        r'Recommandations:.*$',
+        r'2\.\s*\*\*recommendations\*\*:.*$',  # Numbered section format
+        r'2\.\s*\*\*Recommendations\*\*:.*$'   # Alternative numbered section format
+    ]
+    
+    cleaned = template
+    for pattern in patterns:
+        cleaned = re.sub(pattern, '', cleaned, flags=re.DOTALL | re.IGNORECASE)
+    
+    return cleaned.strip()
+
 def generate_response(model: str, processed_content: dict, alert_type: str, gravity: str, language: str = "en") -> str:    
     try:
         if model not in AVAILABLE_MODELS:
             raise ValueError(f"Model '{model}' not available")
+
+        # Enhanced cache checking with logging
+        cached_response = response_cache.get(processed_content)
+        if cached_response:
+            logger.info(f"Cache hit for alert_type={alert_type}")
+            logger.info("Using cached response instead of generating new one")
+            logger.info(f"Cached response preview: {cached_response[:200]}...")
+            return cached_response
 
         # Get prompt template
         prompt_config = get_alert_prompt(alert_type, model)
@@ -105,30 +137,32 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
         if not prompt_template:
             raise ValueError(f"No template found for language: {language}")
 
-        # Check CAG cache first for identical processed data
-        cached_response = response_cache.get(processed_content)
-        if cached_response:
-            logger.info(f"Using cached response for alert_type={alert_type}")
-            return cached_response
-
         try:
             # Try RAG first
             rag_context = retrieve_context(alert_type, gravity, language)
             if rag_context and "No recommendations available." not in rag_context:
                 logger.info(f"RAG successful for alert_type={alert_type}")
+                # Clean prompt template when using RAG
+                cleaned_template = clean_prompt_template(prompt_template)
+                logger.info("Removed recommendation sections from prompt template")
+                
                 # Format prompt with RAG context
-                formatted_prompt = prompt_template.format(**processed_content)
-                full_prompt = f"{formatted_prompt}{rag_context}"
+                formatted_prompt = cleaned_template.format(**processed_content)
+                full_prompt = f"{formatted_prompt}\n\nRecommendations from similar cases:\n{rag_context}"
+                logger.info("Added RAG context to prompt")
             else:
-                # Use template without RAG
-                full_prompt = prompt_template.format(**processed_content)
+                # Use original template without RAG
+                formatted_prompt = prompt_template.format(**processed_content)
+                full_prompt = formatted_prompt
+                logger.info("Using original template (no RAG context available)")
 
             # Generate response
             response = generate_llm_response(model, full_prompt)
             
-            # Cache the new response with the processed data
+            # Cache the new response with additional logging
             response_cache.set(processed_content, response)
             logger.info(f"Cached new response for alert_type={alert_type}")
+            logger.info(f"New response preview: {response[:200]}...")
             
             return response
 
@@ -141,5 +175,6 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
             return response
 
     except Exception as e:
+        # Log error and return error message
         logger.error(f"Response generation failed: {str(e)}")
         return f"Error: {str(e)}"
