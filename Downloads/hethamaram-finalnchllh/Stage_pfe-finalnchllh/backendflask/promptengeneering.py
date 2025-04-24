@@ -86,12 +86,10 @@ Input fields:
 - Overrun percentage: {overrun_pct}%
 
 Follow this structure:
-
-1. **Observation**: "The subscribed power limit for {device} has been exceeded. The measured power was {Value} {unit}, compared to the subscribed threshold of {threshold} {unit}."
-
-2. **Impact Assessment**: "This indicates an overrun of {overrun_pct}%, which may result in additional demand charges or contractual penalties depending on the utility agreement."
-3. **Immediate Actions**:
-4. **Recommended Actions**: 
+**Observation**: "The subscribed power limit for {device} has been exceeded. The measured power was {Value} {unit}, compared to the subscribed threshold of {threshold} {unit}."
+**Impact Assessment**: "This indicates an overrun of {overrun_pct}%, which may result in additional demand charges or contractual penalties depending on the utility agreement."
+**Immediate Actions**:
+**Recommended Actions**: 
 """
 subscribed_power_prompt_fr = """
 Vous êtes un assistant générant des alertes de dépassement de seuil de puissance souscrite à partir de données structurées. En vous basant sur les champs suivants, rédigez une alerte professionnelle et concise pour le client.

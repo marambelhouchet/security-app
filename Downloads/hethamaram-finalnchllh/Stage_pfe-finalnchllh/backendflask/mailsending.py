@@ -12,21 +12,7 @@ SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')  # SMTP server address 
 SMTP_PORT = int(os.getenv('SMTP_PORT', 465))  # SMTP server port (default: 465 for SSL)
 SMTP_EMAIL = os.getenv('SMTP_EMAIL')  # Sender email address (retrieved from environment variables)
 SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')  # Sender email password (retrieved from environment variables)
-EMAIL_RECIPIENTS = os.getenv('EMAIL_RECIPIENTS', '').split(',')  # Changed from ALERT_RECIPIENTS
-
-# Add this debug section
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
-# Add verification of email settings
-if not SMTP_EMAIL or not SMTP_PASSWORD:
-    logging.error("SMTP credentials not configured properly!")
-    print("❌ Missing SMTP credentials in .env file")
-else:
-    logging.info(f"SMTP Email configured: {SMTP_EMAIL}")
-    logging.info(f"Default recipients: {EMAIL_RECIPIENTS}")
+ALERT_RECIPIENTS = os.getenv('ALERT_RECIPIENTS', '').split(',')  # Default recipients (retrieved from environment variables)
 
 # Function to clean LaTeX content
 def clean_latex(content):
@@ -74,97 +60,49 @@ def clean_latex(content):
 
 # Function to format content into HTML
 def format_html_content(content):
-    """Convert cleaned content to HTML with structured formatting for alerts."""
-    try:
-        # Parse JSON if content is a string representation of JSON
-        if isinstance(content, str):
-            try:
-                import json
-                content = json.loads(content)
-            except json.JSONDecodeError:
-                pass
+    """
+    Convert cleaned content to HTML with proper formatting and preserved tags.
 
-        # Handle dictionary format
-        if isinstance(content, dict):
-            formatted_sections = []
-            
-            # Add alert statement
-            if "alertstatement" in content:
-                formatted_sections.append(content["alertstatement"])
-            
-            # Add context
-            if "context" in content:
-                formatted_sections.append(f"\nContext:\n{content['context']}")
-            
-            # Add immediate actions
-            if "immediateactions" in content:
-                actions = content["immediateactions"]
-                if isinstance(actions, list):
-                    actions_text = "\nImmediate Actions:\n" + "\n".join(f"• {action}" for action in actions)
-                else:
-                    actions_text = f"\nImmediate Actions:\n{actions}"
-                formatted_sections.append(actions_text)
-            
-            # Add recommended steps
-            if "recommendednext_steps" in content:
-                steps = content["recommendednext_steps"]
-                if isinstance(steps, list):
-                    steps_text = "\nRecommended Actions:\n" + "\n".join(f"• {step}" for step in steps)
-                else:
-                    steps_text = f"\nRecommended Actions:\n{steps}"
-                formatted_sections.append(steps_text)
-            
-            # Join all sections
-            content = "\n".join(formatted_sections)
+    Parameters:
+        content (str): The cleaned content.
 
-        # Convert newlines to <br> tags
-        html = content.replace('\n', '<br>')
-        
-        # Format bullet points
-        html = re.sub(r'•\s*(.+?)<br>', r'<li>\1</li>', html)
-        html = re.sub(r'<li>(.+?)</li>', r'<ul style="margin: 5px 0;"><li>\1</li></ul>', html)
-        
-        # Format sections
-        html = re.sub(r'Context:<br>', r'<strong>Context:</strong><br>', html)
-        html = re.sub(r'Immediate Actions:<br>', r'<strong>Immediate Actions:</strong><br>', html)
-        html = re.sub(r'Recommended Actions:<br>', r'<strong>Recommended Actions:</strong><br>', html)
-        
-        # Apply general formatting
-        html = re.sub(r'\^(\w+)', r'<sup>\1</sup>', html)  # Superscripts
-        html = re.sub(r'_(\w+)', r'<sub>\1</sub>', html)  # Subscripts
-        html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)  # Bold text
-        
-        return html
+    Returns:
+        str: HTML-formatted content.
+    """
+    # Convert newlines to <br> for HTML formatting
+    html = content.replace('\n', '<br>')
 
-    except Exception as e:
-        logging.error(f"Error formatting HTML content: {str(e)}")
-        return str(content)  # Return original content if formatting fails
+    # Handle superscripts and subscripts
+    html = re.sub(r'\^(\w+)', r'<sup>\1</sup>', html)  # Superscripts
+    html = re.sub(r'_(\w+)', r'<sub>\1</sub>', html)  # Subscripts
 
+    # Convert bold patterns (**bold**) to <strong> tags
+    html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)
+
+    # Handle headers (lines starting with ###)
+    html = re.sub(r'<br>###\s*(.+?)<br>', r'<br><strong>\1</strong><br>', html)
+    html = re.sub(r'^###\s*(.+?)<br>', r'<strong>\1</strong><br>', html)  # Line start case
+
+    return html
 LOGO_PATH = r'C:\Users\user\Downloads\wattnow project\logo.png'
 
 # Function to send alert emails
 def send_alert_email(subject, content, recipients=None, lang='en'):
-    """Send multilingual alert email with LaTeX normalization."""
+    """
+    Send multilingual alert email with LaTeX normalization.
+
+    Parameters:
+        subject (str): The email subject.
+        content (str): The email content (raw text with LaTeX formatting).
+        recipients (list): A list of recipient email addresses (defaults to ALERT_RECIPIENTS).
+        lang (str): The language for the email content ('en', 'fr', or 'ar').
+
+    Raises:
+        Exception: If email sending fails.
+    """
     try:
         if not recipients:
-            recipients = EMAIL_RECIPIENTS
-            logging.info(f"Using default recipients: {recipients}")
-
-        # Clean and validate recipients
-        recipients = [r.strip() for r in recipients if r.strip()]
-        if not recipients:
-            error_msg = "No valid recipients specified"
-            logging.error(error_msg)
-            raise ValueError(error_msg)
-
-        logging.info(f"Preparing to send email to: {recipients}")
-        print(f"📧 Sending email to: {recipients}")
-
-        # Verify SMTP credentials
-        if not SMTP_EMAIL or not SMTP_PASSWORD:
-            error_msg = "SMTP credentials not configured"
-            logging.error(error_msg)
-            raise ValueError(error_msg)
+            recipients = ALERT_RECIPIENTS  # Use default recipients if none are provided
 
         # Clean LaTeX content
         cleaned_content = clean_latex(content)
@@ -236,36 +174,14 @@ def send_alert_email(subject, content, recipients=None, lang='en'):
             logo.add_header('Content-Disposition', 'inline', filename="logo.png")
             msg.attach(logo)
 
-        # Enhanced SMTP connection with more logging
-        try:
-            logging.info(f"Connecting to SMTP server: {SMTP_SERVER}:{SMTP_PORT}")
-            with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
-                logging.info("Attempting SMTP login...")
-                server.login(SMTP_EMAIL, SMTP_PASSWORD)
-                
-                logging.info("Sending email...")
-                server.sendmail(SMTP_EMAIL, recipients, msg.as_string())
-                
-                success_msg = f"✅ Email sent successfully to: {', '.join(recipients)}"
-                print(success_msg)
-                logging.info(success_msg)
-                return True
-                
-        except smtplib.SMTPAuthenticationError:
-            error_msg = "SMTP authentication failed. Check your email and password."
-            print(f"❌ {error_msg}")
-            logging.error(error_msg)
-            raise
-        except smtplib.SMTPException as e:
-            error_msg = f"SMTP error occurred: {str(e)}"
-            print(f"❌ {error_msg}")
-            logging.error(error_msg)
-            raise
+        # Send email via SMTP
+        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
+            server.login(SMTP_EMAIL, SMTP_PASSWORD)
+            server.sendmail(SMTP_EMAIL, recipients, msg.as_string())
+            logging.info(f"Alert email sent to {recipients}")
 
     except Exception as e:
-        error_msg = f"❌ Email failed: {str(e)}"
-        print(error_msg)
-        logging.error(error_msg)
+        logging.error(f"Email failed: {str(e)}")
         raise
 
 # Function to extract alert information

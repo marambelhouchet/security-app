@@ -153,11 +153,12 @@ def sync_mongodb_to_chromadb(batch_size: int = 100) -> None:
         raise
 
 def retrieve_context(alert_type: str, gravity: str, language: str = "en") -> str:
-    """Retrieve context from ChromaDB with enhanced recommendation handling"""
+    """Retrieve context from ChromaDB with strict matching of type, gravity, and language"""
     try:
         logger.info(f"Retrieving context for: type={alert_type}, gravity={gravity}, lang={language}")
         alert_embedding = embedding_model.encode(alert_type).tolist()
-
+        
+        # Query ChromaDB with proper operator syntax
         results = chroma_collection.query(
             query_embeddings=[alert_embedding],
             n_results=5,
@@ -169,40 +170,114 @@ def retrieve_context(alert_type: str, gravity: str, language: str = "en") -> str
             }
         )
 
-        if not results.get("documents"):
-            logger.warning(f"No results for {gravity}/{language}")
+        if not results["documents"]:
+            logger.warning(f"No results found for {alert_type}/{gravity}/{language}")
             return "No recommendations available."
 
+        # Use sets to deduplicate recommendations
+        immediate_actions = set()
+        recommended_actions = set()
+        next_steps = set()
+
+        # Process each document
+        found_match = False
+        for doc in results["documents"][0]:
+            logger.debug(f"Processing document: {doc[:100]}...")
+            
+            sections = doc.split('\n\n')
+            current_doc_match = False
+            
+            # First check if this document matches our alert type
+            for section in sections:
+                if section.startswith('Problem:'):
+                    problem_text = section.replace('Problem:', '').strip().lower()
+                    alert_type_lower = alert_type.lower()
+                    
+                    # Handle French translations
+                    if language == 'fr':
+                        if alert_type_lower == 'subscribedpower' and 'puissance souscrite' in problem_text:
+                            current_doc_match = True
+                        # Add other French mappings as needed
+                    else:
+                        if alert_type_lower in problem_text:
+                            current_doc_match = True
+                    
+                    if current_doc_match:
+                        found_match = True
+                        logger.info(f"Found matching problem: {problem_text}")
+                    break
+
+            if not current_doc_match:
+                continue
+
+            # If we found a match, process the recommendations
+            for section in sections:
+                section = section.strip()
+                if section.startswith('Immediate Actions:') or section.startswith('Actions Immédiates:'):
+                    actions = [a.strip('- ').strip() for a in section.split('\n')[1:]]
+                    for action in actions:
+                        if action:
+                            immediate_actions.add(action)
+                            logger.debug(f"Added immediate action: {action}")
+                    
+                elif section.startswith('Recommended Actions:') or section.startswith('Actions Recommandées:'):
+                    actions = [a.strip('- ').strip() for a in section.split('\n')[1:]]
+                    for action in actions:
+                        if action:
+                            recommended_actions.add(action)
+                            logger.debug(f"Added recommended action: {action}")
+                
+                elif section.startswith('Recommended Next Steps:') or section.startswith('Prochaines Étapes:'):
+                    steps = [s.strip('- ').strip() for s in section.split('\n')[1:]]
+                    for step in steps:
+                        if step:
+                            next_steps.add(step)
+                            logger.debug(f"Added next step: {step}")
+
+        # Build final recommendations with language-specific headers
         recommendations = []
-        for doc, metadata, distance in zip(results["documents"][0], 
-                                         results["metadatas"][0], 
-                                         results["distances"][0]):
-            confidence = 1 - distance
-            if confidence >= 0.7:
-                # Parse the document to extract different sections
-                sections = doc.split('\n\n')
-                formatted_sections = []
-                
-                for section in sections:
-                    if section.startswith('Problem:'):
-                        formatted_sections.append(f"Similar Situation ({confidence:.2f}% match):\n{section}")
-                    elif section.startswith('Immediate Actions:'):
-                        formatted_sections.append(f"Suggested Immediate Actions:\n{section}")
-                    elif section.startswith('Recommended Actions:') or section.startswith('Recommended Next Steps:'):
-                        formatted_sections.append(f"Recommended Follow-up:\n{section}")
-                
-                rec_text = '\n\n'.join(formatted_sections)
-                recommendations.append(rec_text)
+        headers = {
+            'en': {
+                'immediate': 'Immediate Actions:',
+                'recommended': 'Recommended Actions:',
+                'next_steps': 'Recommended Next Steps:'
+            },
+            'fr': {
+                'immediate': 'Actions Immédiates:',
+                'recommended': 'Actions Recommandées:',
+                'next_steps': 'Prochaines Étapes:'
+            }
+        }
+        
+        current_headers = headers.get(language, headers['en'])
+        
+        if immediate_actions:
+            recommendations.append(current_headers['immediate'])
+            for action in sorted(immediate_actions):
+                recommendations.append(f"• {action}")
+            recommendations.append("")
+            
+        if recommended_actions:
+            recommendations.append(current_headers['recommended'])
+            for action in sorted(recommended_actions):
+                recommendations.append(f"• {action}")
+            recommendations.append("")
+            
+        if next_steps:
+            recommendations.append(current_headers['next_steps'])
+            for step in sorted(next_steps):
+                recommendations.append(f"• {step}")
 
         if recommendations:
-            logger.info(f"Found {len(recommendations)} relevant recommendations")
-            return "\n\n---\n\n".join(recommendations)
-        else:
-            logger.warning("No high-confidence recommendations found")
-            return "No high-confidence recommendations available for this situation."
+            final_recommendations = "\n".join(recommendations)
+            logger.info(f"Found {len(immediate_actions)} immediate, {len(recommended_actions)} recommended actions, and {len(next_steps)} next steps")
+            return final_recommendations
+        
+        logger.warning("No structured recommendations found")
+        return "No specific recommendations available for this situation."
 
     except Exception as e:
-        logger.error(f"Context retrieval error: {str(e)}")
+        logger.error(f"Context retrieval error: {str(e)}", exc_info=True)
         return f"Error retrieving recommendations: {str(e)}"
 
 
