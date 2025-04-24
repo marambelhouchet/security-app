@@ -12,8 +12,7 @@ Champs d'entrée :
 
 Respectez exactement la structure suivante :
 **Observation initiale** : "Nous avons constaté que la consommation hebdomadaire de {Value} {unit}, contre un seuil de {threshold} {unit}."
-
-**Note contextuelle** : "Ce dépassement de {weekly_variation_percent}%, [modeste/important/considérable], pourrait [ne pas indiquer un problème majeur / suggérer un besoin d’ajustements], mais souligne des pistes d’amélioration de l’efficacité énergétique."
+Ce dépassement de {weekly_variation_percent}%, [modeste/important/considérable], pourrait [ne pas indiquer un problème majeur / suggérer un besoin d’ajustements], mais souligne des pistes d’amélioration de l’efficacité énergétique.
 
 **Actions recommandées**:
 """
@@ -29,7 +28,7 @@ Input fields:
 
 Follow this structure exactly:
 **Opening Observation**: "We've observed that the weekly consumption for {device} exceeded the threshold, registering {Value} {unit} compared to the threshold of {threshold} {unit}."
-**Contextual Note**: "This represents a [modest/notable/significant] overrun of {weekly_variation_percent}%, which may [not necessarily indicate a significant issue/suggest a need for adjustments] but highlights potential efficiency improvements."
+This represents a [modest/notable/significant] overrun of {weekly_variation_percent}%, which may [not necessarily indicate a significant issue/suggest a need for adjustments] but highlights potential efficiency improvements.
 **Recommended Actions**:
 """
 
@@ -139,7 +138,7 @@ Générez une alerte formelle (sans salutations ni formules de politesse) pour d
 3. Actions Recommandées  :
 """
 cosphi_prompt = """
-Generate a formal, technical alert message (no greetings/bold text) for abnormal Power Factor (Cos φ) values using the provided data. Follow exactly this structure:
+Generate a formal, technical alert message (no greetings/bold text) for abnormal Power Factor (Cos φ) values using the provided data. Follow this structure:
 Alert Statement:
    - Open with: "The Power Factor (Cos φ) for {device} has dropped to {Value}, significantly below the fixed threshold of {threshold}."
    - Highlight operational/financial consequences (e.g., "This indicates inefficiencies in reactive power management and may lead to penalties").
