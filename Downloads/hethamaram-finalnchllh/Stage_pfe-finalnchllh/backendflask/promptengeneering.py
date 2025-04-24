@@ -241,8 +241,7 @@ Ton : Professionnel, concis et orienté solution. Évitez les spéculations ; pr
 
 weekly_math = """ 
 You are an assistant that generates energy consumption alert messages using structured input data. Based on the following fields, generate a professional and concise alert for a client:
-
-Input fields:
+Using this data :
 - Device label: {device}
 - Measured value: {Value} {unit}
 - Threshold: {threshold} {unit}
@@ -251,7 +250,7 @@ Input fields:
   Step 1: {Value} - {threshold} = {difference} {unit}
   Step 2: ({difference}/{threshold}) × 100 = {overrun_pct}%
 </calculations>
-Follow this structure exactly:
+Generate a professional alert by following this structure :
 1. **Opening Observation**: "Weekly consumption for {device} exceeded threshold: {Value} {unit} vs {threshold} {unit}"
 
 2. **Contextual Note**: "This {overrun_pct}% overrun suggests potential efficiency improvements in energy usage patterns."
@@ -262,8 +261,7 @@ Tone: Formal but conversational. Keep technical. Avoid timestamps.
 """
 weekly_math_fr = """ 
 Vous êtes un assistant chargé de générer des messages d’alerte sur la consommation d’énergie à partir de données structurées :
-
-Champs en entrée :
+En utilisant ces données :
 - Appareil : {device}
 - Valeur mesurée : {Value} {unit}
 - Seuil : {threshold} {unit}
@@ -271,7 +269,7 @@ Champs en entrée :
 <calculations>
   Étape 1 : {Value} - {threshold} = {difference} {unit}
   Étape 2 : ({difference}/{threshold}) × 100 = {overrun_pct}%
-</calculations>
+génnérer une alerte  professionnelle en suivant cette structure :
 Structure :
 1. **Observation** : "Dépassement hebdomadaire sur {device} : {Value} {unit} contre seuil {threshold} {unit}"
 
@@ -283,9 +281,7 @@ Ton : Professionnel et technique. Pas de détails temporels.
 """
 
 subscribed_power_prompt_en_math = """
-Generate energy alert for subscribed power exceedance:
-
-Inputs:
+Using this data :
 - Device: {device}
 - Measured: {Value} {unit}
 - Threshold: {threshold} {unit}
@@ -294,7 +290,7 @@ Inputs:
   {Value} - {threshold} = {difference} {unit}
   ({difference}/{threshold})×100 = {overrun_pct}%
 </calculations>
-Structure:
+Generate a professional alert by following this structure :
 1. **Alert**: "{device} exceeded power limit: {Value} {unit} > {threshold} {unit}"
 2. **Impact**: "{overrun_pct}% overrun may incur contractual penalties"
 3. **Immediate Actions**:
@@ -303,9 +299,7 @@ Structure:
 Tone: Technical/formal. No calculations shown.
 """
 subscribed_power_prompt_fr_math = """
-Générez une alerte de dépassement de puissance :
-
-Données :
+En utilisant ces données :
 - Appareil : {device}
 - Mesure : {Value} {unit}
 - Seuil : {threshold} {unit}
@@ -314,7 +308,7 @@ Données :
   {Value} - {threshold} = {difference} {unit}
   ({difference}/{threshold})×100 = {overrun_pct}%
 </calculations>
-Structure :
+génnérer une alerte  professionnelle en suivant cette structure :
 1. **Alerte** : "Dépassement sur {device} : {Value} {unit} > {threshold} {unit}"
 2. **Conséquences** : "Dépassement de {overrun_pct}% risquant des pénalités contractuelles"
 3. **Actions Immédiates** :
@@ -324,9 +318,7 @@ Tonalité : Professionnelle. Masquer les calculs.
 """
 
 day_alert_math = """
-Generate daily consumption alert with:
-
-Data:
+Using this data :
 - Device: {device}
 - Today: {today_consumption} {unit}
 - Yesterday: {yesterday_consumption} {unit}
@@ -335,7 +327,7 @@ Data:
 <calculations>
   Variation = ({today_consumption}-{yesterday_consumption})/{yesterday_consumption}×100 = {variation_percent}%
 </calculations>
-Structure:
+Generate daily consumption alert by following this structure :
 1. **Alert**: "Abnormal daily variation on {device}"
 2. **Data** in a paraghraph:
    - Today: {today_consumption} {unit}
@@ -346,9 +338,7 @@ Structure:
 Tone: Technical, solution-focused. Use headers as shown.
 """
 day_alert_fr_math = """
-Générez une alerte quotidienne :
-
-Données :
+En utilisant ces données :
 - Appareil : {device}
 - Aujourd'hui : {today_consumption} {unit}
 - Hier : {yesterday_consumption} {unit}
@@ -357,7 +347,7 @@ Données :
 <calculations>
   Variation = ({today_consumption}-{yesterday_consumption})/{yesterday_consumption}×100 = {variation_percent}%
 </calculations>
-Structure :
+génnérer une alerte  professionnelle en suivant cette structure :
 1. **Alerte** : "Variation journalière anormale sur {device}"
 2. **Données** :
    - Aujourd'hui : {today_consumption} {unit}
@@ -369,7 +359,7 @@ Tonalité : Technique avec structure fixe.
 """
 
 ThisWeekVsLastWeek_alert_math = """ 
-Generate a weekly alert using the following data:
+Using the following data:
 
 Device: {device}
 
@@ -380,10 +370,6 @@ Last week: {previousWeekConsumption} {unit}
 Threshold: {threshold} {unit}
 
 Calculation: wrap the entire calculation inside <calculations></calculations> like this:
-
-html
-Copier
-Modifier
 <calculations>
   Variation = ({Value} - {previousWeekConsumption}) / {previousWeekConsumption} × 100 = {variation_percent}%
 </calculations>
@@ -406,7 +392,7 @@ Tone: Professional with clearly marked sections.
 Let me know if you want it applied to a specific dataset!
 """
 ThisWeekVsLastWeek_alert_fr_math = """
-Générez une alerte hebdomadaire en utilisant ces données :
+En utilisant ces données :
 - Appareil : {devicel}
 - Cette semaine : {Value} {unit}
 - Semaine dernière : {previousWeekConsumption} {unit}

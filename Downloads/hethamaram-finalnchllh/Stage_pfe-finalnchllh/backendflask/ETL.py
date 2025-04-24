@@ -77,17 +77,27 @@ def get_alert_type(alert_data):
 def calculate_percent(value, threshold):
     """Helper to calculate percentage difference, avoiding division by zero."""
     try:
-        # Convert string inputs to float
+        # Convert string inputs to float and add logging
         value = float(value) if value is not None else None
         threshold = float(threshold) if threshold is not None else None
         
-        if value is None or threshold is None or threshold == 0:
-            return 0  # Return 0 instead of None for better handling
+        logging.info(f"Calculating percentage - Value: {value}, Threshold: {threshold}")
         
-        return round(((value - threshold) / threshold) * 100, 2)
+        if value is None or threshold is None:
+            logging.warning("Value or threshold is None")
+            return 0
+            
+        if threshold == 0:
+            logging.warning("Threshold is zero, avoiding division by zero")
+            return 0
+        
+        percentage = round(((value - threshold) / threshold) * 100, 2)
+        logging.info(f"Calculated percentage: {percentage}%")
+        return percentage
+        
     except (ValueError, TypeError) as e:
         logging.error(f"Error calculating percentage: {str(e)}")
-        return 0  # Return 0 on conversion errors
+        return 0
 
 def process_alert_content(alert_type, alert_data):
     """
@@ -113,14 +123,22 @@ def process_alert_content(alert_type, alert_data):
             })
 
         elif alert_type == 'ThisWeekVsLastWeek':
+            value = alert_data.get('Value')
+            threshold = alert_data.get('threshold')
+            
+            logging.info(f"ThisWeekVsLastWeek - Processing values:")
+            logging.info(f"Current week value: {value}")
+            logging.info(f"Previous week threshold: {threshold}")
+            
+            weekly_variation = calculate_percent(value, threshold)
+            
             processed.update({
                 'type': {'type': alert_data.get('type', {}).get('type')},
                 'previousWeekConsumption': alert_data.get('previousWeekConsumption'),
-                'weekly_variation_percent': calculate_percent(
-                    alert_data.get('Value'), 
-                    alert_data.get('threshold')
-                )
+                'weekly_variation_percent': weekly_variation
             })
+            
+            logging.info(f"Calculated weekly variation: {weekly_variation}%")
 
         elif alert_type == 'WeekThreshold':
             processed.update({
