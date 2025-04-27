@@ -1,0 +1,44 @@
+{
+  "alert_type": "ExceededThreshold",
+  "processed_at": "20250425_215038",
+  "data": {
+    "device": {
+      "label": "Extracteur Moulage"
+    },
+    "unit": "%",
+    "percentage": null,
+    "Value": "134.37",
+    "detectedAt": "2025-03-01 08:22:43",
+    "threshold": "8",
+    "measure": null,
+    "overrun_pct": null,
+    "original_alert_data": {
+      "id": "123",
+      "device": {
+        "label": "Extracteur Moulage"
+      },
+      "type": {
+        "type": "ExceededThreshold",
+        "details": {
+          "unit": "%",
+          "measure": "thdv",
+          "percentage": null,
+          "Value": "134.37",
+          "freqency": "1",
+          "detectedAt": "2025-03-01 08:22:43",
+          "threshold": "8",
+          "thresholdType": "exceeding",
+          "measuredValue": "THDV"
+        }
+      },
+      "status": "Open",
+      "assignedTo": [],
+      "task": null,
+      "comment": null,
+      "createdAt": "2025-03-01 07:22:43",
+      "sensor_group": "electricity",
+      "sensor_type": "electricity",
+      "title": "THDI / THDV"
+    }
+  }
+}

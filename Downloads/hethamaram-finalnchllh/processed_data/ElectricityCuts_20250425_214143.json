@@ -1,0 +1,45 @@
+{
+  "alert_type": "ElectricityCuts",
+  "processed_at": "20250425_214143",
+  "data": {
+    "device": {
+      "label": "TE 7"
+    },
+    "unit": null,
+    "percentage": null,
+    "Value": null,
+    "detectedAt": "2025-03-10 15:59:10",
+    "threshold": null,
+    "hold_on": "15",
+    "hold_on_status": "disabled",
+    "original_alert_data": {
+      "id": "123",
+      "device": {
+        "label": "TE 7"
+      },
+      "type": {
+        "type": "ElectricityCuts",
+        "details": {
+          "unit": null,
+          "measure": null,
+          "percentage": null,
+          "Value": null,
+          "detectedAt": "2025-03-10 15:59:10",
+          "threshold": null,
+          "hold_on": "15",
+          "thresholdType": null,
+          "measuredValue": null,
+          "hold_on_status": "disabled"
+        }
+      },
+      "status": "Open",
+      "assignedTo": [],
+      "task": null,
+      "comment": null,
+      "createdAt": "2025-03-10 15:59:10",
+      "sensor_group": "electricity",
+      "sensor_type": "electricity",
+      "title": "Test Coupure 1"
+    }
+  }
+}

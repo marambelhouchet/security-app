@@ -1,4 +1,19 @@
 import logging
+from datetime import datetime
+import calendar
+
+def get_day_names(data: dict) -> tuple:
+    """Extract day names from detected date"""
+    try:
+        detected_at = safe_deep_get(data, ("type", "details", "detectedAt"))
+        if detected_at:
+            date_obj = datetime.strptime(detected_at, '%Y-%m-%d %H:%M:%S')
+            today = calendar.day_name[date_obj.weekday()]
+            yesterday = calendar.day_name[(date_obj.weekday() - 1) % 7]
+            return today, yesterday
+    except Exception as e:
+        logging.error(f"Error getting day names: {e}")
+    return None, None
 
 # Function to safely retrieve a value from a nested dictionary or list
 def safe_deep_get(d, path):
@@ -91,6 +106,10 @@ def determine_gravity(alert_type: str, data: dict, language: str = "en") -> str:
             "CurrentDayVsLastDay": {
                 "params": [("type", "details", "Value"), ("type", "details", "threshold")],
                 "rules": [
+                    # First check Sunday-Monday special case
+                    (lambda v, t: get_day_names(data)[0] == "Sunday" and 
+                     get_day_names(data)[1] == "Monday", "Low"),
+                    # Then continue with normal rules
                     (lambda v, t: (float(v) - float(t)) / float(t) * 100 > 25, "High"),
                     (lambda v, t: 15 <= (float(v) - float(t)) / float(t) * 100 <= 25, "Moderate"),
                     (lambda v, t: (float(v) - float(t)) / float(t) * 100 < 15, "Low")

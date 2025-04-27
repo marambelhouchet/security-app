@@ -1,0 +1,44 @@
+{
+  "alert_type": "SubscribedPower",
+  "processed_at": "20250427_151059",
+  "data": {
+    "device": {
+      "label": "Safran Soliman"
+    },
+    "unit": "kW",
+    "Value": "608.8066",
+    "detectedAt": "2025-03-11 06:27:46",
+    "threshold": "600",
+    "hold_on": null,
+    "overrun_pct": 1.47,
+    "original_alert_data": {
+      "id": "123",
+      "device": {
+        "label": "Safran Soliman"
+      },
+      "type": {
+        "type": "SubscribedPower",
+        "details": {
+          "unit": "kW",
+          "measure": "activePower",
+          "percentage": "75",
+          "Value": "608.8066",
+          "detectedAt": "2025-03-11 06:27:46",
+          "threshold": "600",
+          "hold_on": "1",
+          "thresholdType": "exceeding",
+          "measuredValue": "Subscribed Power",
+          "hold_on_status": "disabled"
+        }
+      },
+      "status": "Open",
+      "assignedTo": [],
+      "task": null,
+      "comment": null,
+      "createdAt": "2025-03-11 05:27:46",
+      "sensor_group": "electricity",
+      "sensor_type": "electricity",
+      "title": "Puissance Souscrite Safran Soliman"
+    }
+  }
+}

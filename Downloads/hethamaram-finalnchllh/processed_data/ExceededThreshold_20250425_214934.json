@@ -1,0 +1,44 @@
+{
+  "alert_type": "ExceededThreshold",
+  "processed_at": "20250425_214934",
+  "data": {
+    "device": {
+      "label": "zone Moulage: Geiss"
+    },
+    "unit": "%",
+    "percentage": null,
+    "Value": "29.63",
+    "detectedAt": "2025-02-14 07:30:44",
+    "threshold": "8",
+    "measure": null,
+    "overrun_pct": null,
+    "original_alert_data": {
+      "id": "abc",
+      "device": {
+        "label": "zone Moulage: Geiss"
+      },
+      "type": {
+        "type": "ExceededThreshold",
+        "details": {
+          "unit": "%",
+          "measure": "thdv",
+          "percentage": null,
+          "Value": "29.63",
+          "freqency": "1",
+          "detectedAt": "2025-02-14 07:30:44",
+          "threshold": "8",
+          "thresholdType": "exceeding",
+          "measuredValue": "THDV"
+        }
+      },
+      "status": "Open",
+      "assignedTo": [],
+      "task": null,
+      "comment": null,
+      "createdAt": "2025-02-14 06:30:44",
+      "sensor_group": "electricity",
+      "sensor_type": "electricity",
+      "title": "THDI / THDV"
+    }
+  }
+}

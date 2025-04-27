@@ -1,5 +1,8 @@
 import json
 import logging
+import os
+from datetime import datetime, timedelta
+import calendar
 from gravity_classification import determine_gravity  # Ensure this import is correct
 
 def process_file(file, language="en") -> tuple:
@@ -108,16 +111,35 @@ def calculate_percent(value, threshold):
         logging.error(f"Error calculating percentage: {str(e)}")
         return None
 
+def get_day_name(date_str):
+    """Convert date string to day name"""
+    try:
+        # Parse the date string (assuming format like '2025-02-12 23:00:36')
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        # Get day name
+        return calendar.day_name[date_obj.weekday()]
+    except Exception as e:
+        logging.error(f"Error parsing date: {str(e)}")
+        return None
+
+def get_previous_day(day_name):
+    """Get previous day name"""
+    days = list(calendar.day_name)
+    try:
+        current_idx = days.index(day_name)
+        previous_idx = (current_idx - 1) % 7
+        return days[previous_idx]
+    except ValueError:
+        logging.error(f"Invalid day name: {day_name}")
+        return None
+
 def process_alert_content(alert_type, alert_data):
-    """
-    Process alert content based on alert type and return processed data dictionary.
-    """
+    """Process alert content based on alert type and return processed data dictionary."""
     try:
         type_details = alert_data.get('type', {}).get('details', {})
         processed = {
             'device': {'label': alert_data.get('device', {}).get('label', 'Unknown Device')},
             'unit': alert_data.get('unit') or type_details.get('unit', 'kWh'),
-            'percentage': alert_data.get('percentage') or type_details.get('percentage', '0'),
             'Value': alert_data.get('Value') or type_details.get('Value', '0'),
             'detectedAt': alert_data.get('detectedAt') or type_details.get('detectedAt', 'Unknown Timestamp'),
             'threshold': alert_data.get('threshold') or type_details.get('threshold', '0'),
@@ -222,6 +244,19 @@ def process_alert_content(alert_type, alert_data):
             logging.info(f"ElectricityCuts - Hold on value: {hold_on}, Status: {hold_on_status}")
 
         elif alert_type == 'CurrentDayVsLastDay':
+            type_details = alert_data.get('type', {}).get('details', {})
+            
+            # Extract detected_at
+            detected_at = (
+                type_details.get('detectedAt')
+                or alert_data.get('detectedAt')
+                or datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            )
+            
+            # Get day names
+            today_name = get_day_name(detected_at)
+            yesterday_name = get_previous_day(today_name) if today_name else None
+            
             yesterday_str = (
                 type_details.get('yesterday_consumption')
                 or type_details.get('yesterday_consumtion')
@@ -247,8 +282,13 @@ def process_alert_content(alert_type, alert_data):
             processed.update({
                 'yesterday_consumption': yesterday_str,
                 'today_consumption': today_str,
-                'variation_percent': calculate_percent(today_val, yesterday_val)
+                'variation_percent': calculate_percent(today_val, yesterday_val),
+                'detected_at': detected_at,
+                'today': today_name,
+                'yesterday': yesterday_name
             })
+            
+            logging.info(f"Day mapping - Today ({today_name}), Yesterday ({yesterday_name})")
 
         processed['original_alert_data'] = alert_data
         return processed
@@ -280,3 +320,32 @@ def process_alert_data(alerts_list, alert_data, language):
             alerts_list.append(alert_tuple)
     except Exception as e:
         logging.error(f"Failed to process alert {alert_type}: {str(e)}")
+
+def save_processed_data(processed_content: dict, alert_type: str) -> str:
+    """Save processed data to JSON file and return the file path"""
+    try:
+        # Create processed_data directory if it doesn't exist
+        output_dir = "processed_data"
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Generate unique filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{output_dir}/{alert_type}_{timestamp}.json"
+        
+        # Add metadata to processed content
+        data_with_metadata = {
+            "alert_type": alert_type,
+            "processed_at": timestamp,
+            "data": processed_content
+        }
+        
+        # Save to JSON file with proper formatting
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data_with_metadata, f, indent=2, ensure_ascii=False)
+            
+        logging.info(f"Saved processed data to {filename}")
+        return filename  # Return the file path
+        
+    except Exception as e:
+        logging.error(f"Failed to save processed data: {str(e)}")
+        raise RuntimeError(f"Error saving processed data: {str(e)}")

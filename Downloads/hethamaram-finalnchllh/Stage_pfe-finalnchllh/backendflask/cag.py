@@ -1,15 +1,17 @@
 import hashlib
 import json
+import time
 from collections import OrderedDict
 import re
 from threading import Lock
 import logging
 from chromadb import logger
 import requests
-from promptengeneering import get_alert_prompt
+from promptengineering import get_alert_prompt
 from rag import retrieve_context
-AVAILABLE_MODELS = ["qwen2.5:3b", "mistral:latest", "deepseek-r1:1.5b", "llama3.2:1b", "qwen2-math:1.5b", "qwen2-math:latest"]
+from ETL import save_processed_data
 
+AVAILABLE_MODELS = ["qwen2.5:3b", "mistral:latest", "deepseek-r1:1.5b", "llama3.2:1b", "qwen2-math:1.5b", "qwen2-math:latest"]
 class ResponseCache:
     """LRU Cache with processed data comparison."""
     def __init__(self, max_size=500):
@@ -55,8 +57,52 @@ class ResponseCache:
             if len(self.cache) > self.max_size:
                 self.cache.popitem(last=False)
 
-# Initialize cache at module level
+class RecommendationCache:
+    """CAG implementation specifically for recommendations based on alert type + gravity"""
+    def __init__(self, max_size=200):
+        self.max_size = max_size
+        self.cache = OrderedDict()  # {key: (recommendations, timestamp)}
+        self.lock = Lock()
+        self.logger = logging.getLogger("CAG")
+
+    def generate_key(self, alert_type: str, gravity: str) -> str:
+        """Generate composite key from alert type and gravity"""
+        try:
+            composite = f"{alert_type.lower()}-{gravity.lower()}"
+            return hashlib.sha256(composite.encode()).hexdigest()
+        except Exception as e:
+            self.logger.error(f"Key generation error: {str(e)}")
+            return None
+
+    def get(self, alert_type: str, gravity: str) -> str | None:
+        """Get cached recommendations for alert type and gravity combination"""
+        key = self.generate_key(alert_type, gravity)
+        if not key:
+            return None
+
+        with self.lock:
+            if key in self.cache:
+                recommendations, _ = self.cache[key]
+                self.cache.move_to_end(key)
+                self.logger.info(f"CAG hit for {alert_type} ({gravity})")
+                return recommendations
+            return None
+
+    def set(self, alert_type: str, gravity: str, recommendations: str) -> None:
+        """Cache new recommendations with timestamp"""
+        key = self.generate_key(alert_type, gravity)
+        if not key:
+            return
+
+        with self.lock:
+            self.cache[key] = (recommendations, time.time())
+            self.cache.move_to_end(key)
+            if len(self.cache) > self.max_size:
+                self.cache.popitem(last=False)
+
+# Initialize both caches
 response_cache = ResponseCache(max_size=500)
+recommendation_cache = RecommendationCache(max_size=200)
 
 def generate_llm_response(model: str, full_prompt: str) -> str:
     """
@@ -95,63 +141,79 @@ def generate_response(model: str, processed_content: dict, alert_type: str, grav
     try:
         logger.info(f"Starting response generation for {alert_type} (Model: {model}, Language: {language})")
         
-        # Input validation
-        if not processed_content:
-            raise ValueError("Empty processed_content")
+        # Check response cache first
+        cached_response = response_cache.get(processed_content)
+        if cached_response:
+            return cached_response
+
+        # Process data and get template
+        processed_data_file = save_processed_data(processed_content, alert_type)
+        if not processed_data_file:
+            raise ValueError("Failed to save processed data")
             
-        if model not in AVAILABLE_MODELS:
-            raise ValueError(f"Model '{model}' not available")
-
-        # Cache check
-        cache_key = response_cache.generate_key(processed_content)
-        if not cache_key:
-            logger.warning("Failed to generate cache key")
-        else:
-            cached = response_cache.get(processed_content)
-            if cached:
-                return cached
-
-        # Get prompt template
+        with open(processed_data_file, 'r', encoding='utf-8') as f:
+            structured_data = json.load(f)
+            
         prompt_config = get_alert_prompt(alert_type, model)
         if not prompt_config or language not in prompt_config:
-            logger.error(f"No template for {alert_type}/{language}")
             raise ValueError(f"Missing template configuration")
 
         prompt_template = prompt_config[language]
 
-        # Try RAG with fallback
-        try:
-            rag_context = retrieve_context(alert_type, gravity, language)
-            
-            if rag_context and not any(x in rag_context for x in [
-                "No recommendations available",
-                "No specific recommendations",
-                "No structured recommendations"
-            ]):
-                # Use RAG recommendations
-                base_prompt = clean_template(prompt_template, remove_recommendations=True)
-                formatted_prompt = base_prompt.format(**processed_content)
-                full_prompt = f"{formatted_prompt}\n\n{rag_context}"
-            else:
-                # Use template with built-in recommendations
-                full_prompt = prompt_template.format(**processed_content)
+        # Try CAG first for recommendations
+        recommendations = recommendation_cache.get(alert_type, gravity)
+        
+        if recommendations:
+            logger.info("Using CAG recommendations")
+            base_prompt = clean_template(prompt_template, remove_recommendations=True)
+            formatted_prompt = base_prompt.format(**structured_data['data'])
+            full_prompt = (
+                f"{formatted_prompt}\n\n"
+                f"Structured Data:\n{json.dumps(structured_data, indent=2)}\n\n"
+                f"Previous Similar Cases Recommendations:\n{recommendations}"
+            )
+        else:
+            # Fallback to RAG if no cached recommendations
+            try:
+                rag_context = retrieve_context(alert_type, gravity, language)
                 
-            response = generate_llm_response(model, full_prompt)
-            
-            if response and not response.startswith("Error"):
-                response_cache.set(processed_content, response)
-                return response
-            else:
-                raise ValueError(f"LLM error: {response}")
-                
-        except Exception as e:
-            logger.error(f"RAG/LLM error: {str(e)}")
-            # Final fallback - template only
-            full_prompt = prompt_template.format(**processed_content)
-            response = generate_llm_response(model, full_prompt)
-            if response:
-                response_cache.set(processed_content, response)
-            return response or f"Error: {str(e)}"
+                if rag_context and not any(x in rag_context for x in [
+                    "No recommendations available",
+                    "No specific recommendations",
+                    "No structured recommendations"
+                ]):
+                    logger.info("Using RAG recommendations")
+                    recommendation_cache.set(alert_type, gravity, rag_context)
+                    base_prompt = clean_template(prompt_template, remove_recommendations=True)
+                    formatted_prompt = base_prompt.format(**structured_data['data'])
+                    full_prompt = (
+                        f"{formatted_prompt}\n\n"
+                        f"Structured Data:\n{json.dumps(structured_data, indent=2)}\n\n"
+                        f"Recommendations:\n{rag_context}"
+                    )
+                else:
+                    logger.info("Using template without external recommendations")
+                    formatted_prompt = prompt_template.format(**structured_data['data'])
+                    full_prompt = (
+                        f"{formatted_prompt}\n\n"
+                        f"Structured Data:\n{json.dumps(structured_data, indent=2)}"
+                    )
+            except Exception as e:
+                logger.error(f"RAG error: {str(e)}")
+                formatted_prompt = prompt_template.format(**structured_data['data'])
+                full_prompt = (
+                    f"{formatted_prompt}\n\n"
+                    f"Structured Data:\n{json.dumps(structured_data, indent=2)}"
+                )
+
+        # Generate and cache response
+        response = generate_llm_response(model, full_prompt)
+        
+        if response and not response.startswith("Error"):
+            response_cache.set(processed_content, response)
+            return response
+        else:
+            raise ValueError(f"LLM error: {response}")
 
     except Exception as e:
         logger.error(f"Response generation failed: {str(e)}")

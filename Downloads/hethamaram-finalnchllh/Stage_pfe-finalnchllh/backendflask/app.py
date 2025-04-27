@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ETL import process_alert_data, process_file  # Corrected import
-from promptengeneering import get_alert_prompt
+from promptengineering import get_alert_prompt
 from cag import generate_response
 from mailsending import extract_alert_info, send_alert_email
 

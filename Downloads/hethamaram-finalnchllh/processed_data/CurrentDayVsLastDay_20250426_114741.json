@@ -1,0 +1,48 @@
+{
+  "alert_type": "CurrentDayVsLastDay",
+  "processed_at": "20250426_114741",
+  "data": {
+    "device": {
+      "label": "Safran Gainsville Sites"
+    },
+    "unit": "kWh",
+    "percentage": "100",
+    "Value": " 4276.85",
+    "detectedAt": "2025-03-10 23:00:36",
+    "threshold": "1835.78",
+    "yesterday_consumption": "1835.78",
+    "today_consumption": " 4276.85",
+    "variation_percent": 132.97,
+    "original_alert_data": {
+      "id": "123",
+      "device": {
+        "label": "Safran Gainsville Sites"
+      },
+      "type": {
+        "type": "CurrentDayVsLastDay",
+        "details": {
+          "yesterday_consumption": "1835.78",
+          "unit": "kWh",
+          "measure": "Daily consumption",
+          "endDate": null,
+          "percentage": "100",
+          "Value": " 4276.85",
+          "detectedAt": "2025-03-10 23:00:36",
+          "threshold": "1835.78",
+          "today_consumption": " 4276.85",
+          "thresholdType": "exceeding",
+          "measuredValue": "energy",
+          "startDate": null
+        }
+      },
+      "status": "Open",
+      "assignedTo": [],
+      "task": null,
+      "comment": null,
+      "createdAt": "2025-03-11 04:00:36",
+      "sensor_group": null,
+      "sensor_type": null,
+      "title": null
+    }
+  }
+}

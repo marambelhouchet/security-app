@@ -1,0 +1,49 @@
+{
+  "alert_type": "CosphiThreshold",
+  "processed_at": "20250426_130027",
+  "data": {
+    "device": {
+      "label": "Safran Gainsville Sites"
+    },
+    "unit": null,
+    "percentage": null,
+    "Value": "0.59",
+    "detectedAt": "2025-01-13 08:00:46",
+    "threshold": "0.8",
+    "overrun_pct": null,
+    "original_alert_data": {
+      "id": "123",
+      "device": {
+        "label": "Safran Gainsville Sites"
+      },
+      "type": {
+        "type": "CosphiThreshold",
+        "details": {
+          "unit": null,
+          "measure": "cosphi",
+          "endDate": {
+            "hour": "23:00",
+            "day": "Sunday"
+          },
+          "percentage": null,
+          "Value": "0.59",
+          "detectedAt": "2025-01-13 08:00:46",
+          "threshold": "0.8",
+          "thresholdType": "decresing",
+          "startDate": {
+            "hour": "00:00",
+            "day": "Monday"
+          }
+        }
+      },
+      "status": "Open",
+      "assignedTo": [],
+      "task": null,
+      "comment": null,
+      "createdAt": "2025-01-13 08:00:46",
+      "sensor_group": null,
+      "sensor_type": null,
+      "title": null
+    }
+  }
+}
