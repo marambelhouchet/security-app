@@ -1,0 +1,7 @@
+Instructions :
+Générez une alerte énergétique professionnelle et concise à partir des données JSON fournies concernant l’évolution de la consommation quotidienne.
+Suivez la structure ci-dessous :
+**Observation** : Commencez par indiquer le pourcentage de variation détecté ({variation_percent} %) entre aujourd’hui et hier, le nom de l’appareil, la valeur de consommation d’aujourd’hui avec son unité et la consommation d’hier avec son unité.
+Ajoutez un bref contexte : si aujourd’hui est lundi et hier dimanche, précisez que : la différence de consommation constatée entre un lundi et un dimanche pourrait être due à la reprise normale des activités après le week-end et n’indique pas nécessairement un problème réel. Sinon, si elle n’est pas entre lundi et hier, précisez que cette variation, observée entre deux jours consécutifs de la semaine ({aujourd’hui} et {hier}), nécessite une vérification minutieuse, car elle pourrait indiquer un problème opérationnel ou technique.
+**Actions immédiates** :
+**Actions recommandées** :

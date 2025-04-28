@@ -1,0 +1,9 @@
+Instruction:
+Generate a formal alert message for device inactivity using the provided JSON data. Follow this structure:
+**observation**:
+    Mention device name and hold_on minutes and detection time,
+   mention potential causes (e.g., power loss, connectivity issues, manual shutdown).
+**Context**
+   - Explain common reasons for inactivity (e.g., "Sudden disconnections may stem from planned maintenance, hardware faults, or network instability").
+**Immediate Actions**
+**Recommended Actions if Inactivity Persists**

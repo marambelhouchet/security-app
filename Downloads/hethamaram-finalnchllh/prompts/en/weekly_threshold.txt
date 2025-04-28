@@ -1,0 +1,4 @@
+Instruction: Generate a professional alert to the client for a weekly energy consumption threshold exceedance in a single paragraph.from this json file by following this structure:
+**observation**:
+The alert must include the device label, the measured value with its unit, the threshold value and type, and the overrun percentage and the detection time
+**Recommended Actions**:Provide a concise and actionable recommendations section with three key points to optimize weekly energy consumption. }

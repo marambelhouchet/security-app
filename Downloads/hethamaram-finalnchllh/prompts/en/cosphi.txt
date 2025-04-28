@@ -1,0 +1,8 @@
+Instruction:
+Generate a formal and technical alert message regarding an abnormal decrease in the Power Factor (Cos Phi), based on the provided JSON file. The alert message should respect the following structure:
+**Observations**:
+Indicate the device label, current value, threshold, and gravity level.
+If the gravity is High, highlight serious operational or financial consequences linked to poor reactive power management If the gravity is Low, point out that although the situation is still acceptable, it suggests a small opportunity for improving energy efficiency.
+**Context**:Briefly explain that an optimal Cos Phi value is close to 1, ensuring maximum energy efficiency. Use your own wording while maintaining a formal and technical tone.
+**Immediate Actions**:
+**Recommended Next Steps**:

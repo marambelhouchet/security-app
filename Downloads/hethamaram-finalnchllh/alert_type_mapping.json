@@ -1,0 +1,15 @@
+{
+  "Weekly Consumption Alert": "weekly_threshold",
+  "WeekThreshold": "weekly_threshold",
+  "THDV": "thdv",
+  "ExceededThreshold": "thdv",
+  "SubscribedPower": "subscribed_power",
+  "Subscribed Power Exceeded": "subscribed_power",
+  "This Day vs Last Day Alert": "daily_comparison",
+  "CurrentDayVsLastDay": "daily_comparison",
+  "Power Factor - Cos Phi": "cosphi",
+  "CosphiThreshold": "cosphi",
+  "Inactive Device": "electricity_cuts",
+  "ElectricityCuts": "electricity_cuts",
+  "ThisWeekVsLastWeek": "weekly_threshold"
+}

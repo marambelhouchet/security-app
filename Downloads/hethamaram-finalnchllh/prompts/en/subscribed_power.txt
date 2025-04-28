@@ -1,0 +1,5 @@
+Generate professional and concise  energy alert for subscribed power threshold exceedance using the following json file. 
+Follow this structure:
+**Observation**: "analyze the situation shortly mentioning Device label,Measured value with unit,Subscribed threshold with unit , the overrun percentage and the detection time. Mention also that “any prolonged exceedance beyond 10 % may result in penalties on your energy bill.”
+**Immediate Actions**: 
+**Recommended Actions**: 

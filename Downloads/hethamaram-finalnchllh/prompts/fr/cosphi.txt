@@ -1,0 +1,8 @@
+Consigne :
+Générer un message d’alerte formel et technique concernant une diminution anormale du facteur de puissance (cos phi), à partir du fichier JSON fourni. Le message d’alerte doit respecter la structure suivante :
+**Observations** :
+Indiquer le nom de l’appareil, la valeur actuelle, le seuil et le niveau de gravité.
+Si la gravité est élevée, souligner les graves conséquences opérationnelles ou financières liées à une mauvaise gestion de la puissance réactive. Si la gravité est faible, souligner que, bien que la situation soit encore acceptable, elle suggère une légère marge d’amélioration de l’efficacité énergétique.
+**Contexte** : Expliquez brièvement qu’une valeur optimale de cos phi est proche de 1, garantissant une efficacité énergétique maximale. Utilisez votre propre formulation tout en conservant un ton formel et technique.
+**Actions immédiates** :
+**Prochaines étapes recommandées** :

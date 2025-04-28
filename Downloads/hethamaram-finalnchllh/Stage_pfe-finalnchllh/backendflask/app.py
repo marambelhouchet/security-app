@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ETL import process_alert_data, process_file  # Corrected import
-from promptengineering import get_alert_prompt
+from promptengineering import get_alert_prompt, add_new_alert_type
 from cag import generate_response
 from mailsending import extract_alert_info, send_alert_email
 
@@ -24,12 +24,14 @@ print(f"EMAIL_RECIPIENTS: {os.getenv('EMAIL_RECIPIENTS')}")
 
 app = Flask(__name__)
 CORS(app, resources={
-    r"/chat": {
+    r"/*": {  # This will apply to all routes
         "origins": ["http://localhost:5173", "http://127.0.0.1:5173"],
-        "methods": ["POST"],
-        "allow_headers": ["Content-Type"]
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Accept"],
+        "supports_credentials": True
     }
-}, supports_credentials=True)
+})
+
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 AVAILABLE_MODELS = ["qwen2.5:3b", "mistral:latest", "deepseek-r1:1.5b", 
@@ -182,6 +184,47 @@ def chat_handler():
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/add-type', methods=['POST', 'OPTIONS'])
+def add_type_handler():
+    if request.method == 'OPTIONS':
+        response = jsonify({'message': 'OK'})
+        return response
+
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file provided"}), 400
+            
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+            
+        if not file.filename.endswith('.txt'):
+            return jsonify({"error": "File must be .txt format"}), 400
+            
+        type_name = request.form.get('typeName')
+        if not type_name:
+            return jsonify({"error": "Type name is required"}), 400
+            
+        language = request.form.get('language', 'en')
+        
+        # Read prompt content from uploaded file
+        prompt_content = file.read().decode('utf-8')
+        
+        # Add new alert type
+        success = add_new_alert_type(type_name, prompt_content, language)
+        
+        if success:
+            return jsonify({
+                "message": "Alert type added successfully",
+                "type": type_name
+            })
+        else:
+            return jsonify({"error": "Failed to add alert type"}), 500
+            
+    except Exception as e:
+        logging.error(f"Error in add_type_handler: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5004, debug=True)

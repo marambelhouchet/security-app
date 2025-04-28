@@ -1,0 +1,4 @@
+Instruction : Générez une alerte professionnelle pour le client en cas de dépassement du seuil de consommation énergétique hebdomadaire en un seul paragraphe à partir de ce fichier JSON, en suivant la structure suivante :
+**Observation** :
+L’alerte doit inclure l’étiquette de l’appareil, la valeur mesurée avec son unité, la valeur et le type de seuil, ainsi que le pourcentage de dépassement et le délai de détection.
+**Actions recommandées** : Fournissez une section de recommandations concises et concrètes, avec trois points clés pour optimiser la consommation énergétique hebdomadaire.

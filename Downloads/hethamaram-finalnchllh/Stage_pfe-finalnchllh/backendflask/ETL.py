@@ -136,6 +136,7 @@ def get_previous_day(day_name):
 def process_alert_content(alert_type, alert_data):
     """Process alert content based on alert type and return processed data dictionary."""
     try:
+        # Basic processing for all alert types
         type_details = alert_data.get('type', {}).get('details', {})
         processed = {
             'device': {'label': alert_data.get('device', {}).get('label', 'Unknown Device')},
@@ -145,6 +146,20 @@ def process_alert_content(alert_type, alert_data):
             'threshold': alert_data.get('threshold') or type_details.get('threshold', '0'),
         }
 
+        # Check if this is a known alert type
+        known_types = [
+            'SubscribedPower', 'ThisWeekVsLastWeek', 'WeekThreshold',
+            'CosphiThreshold', 'ExceededThreshold', 'ElectricityCuts',
+            'CurrentDayVsLastDay'
+        ]
+
+        # If it's not a known type, return the basic processed data
+        if alert_type not in known_types:
+            logging.info(f"Processing new alert type: {alert_type} with basic processing")
+            processed['original_alert_data'] = alert_data
+            return processed
+
+        # Rest of your existing code for known types...
         if alert_type == 'SubscribedPower':
             value = float(processed.get('Value', 0))
             threshold = float(processed.get('threshold', 0))

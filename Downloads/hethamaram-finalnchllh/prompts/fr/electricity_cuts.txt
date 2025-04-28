@@ -1,0 +1,9 @@
+Instruction :
+Générer un message d’alerte formel en cas d’inactivité de l’appareil à l’aide des données JSON fournies. Suivre la structure suivante :
+**Observation** :
+Indiquer le nom de l’appareil, le nombre de minutes d’attente et l’heure de détection.
+Indiquer les causes potentielles (par exemple, coupure de courant, problèmes de connectivité, arrêt manuel).
+**Contexte**
+- Expliquer les raisons courantes d’inactivité (par exemple, « Les déconnexions soudaines peuvent être dues à une maintenance planifiée, à des pannes matérielles ou à une instabilité du réseau »).
+**Actions immédiates**
+**Actions recommandées en cas d’inactivité persistante**

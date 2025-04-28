@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import UploadBox from "./UploadBox";
 import SubmitButton from "./SubmitButton";
+import AddTypeModal from "./AddTypeModal";
 import "../styles/FormSection.css";
 
 function FormSection() {
@@ -13,6 +14,7 @@ function FormSection() {
   const [shake, setShake] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isAddTypeModalOpen, setIsAddTypeModalOpen] = useState(false);
   const buttonRef = useRef(null);
 
   const validateEmail = (email) => {
@@ -114,71 +116,92 @@ function FormSection() {
     };
   }, [shake]);
 
+  const handleAddTypeSuccess = () => {
+    // Handle successful type addition if needed
+    setIsAddTypeModalOpen(false);
+  };
+
   return (
-    <div className="form-section">
-      {/* Language selection */}
-      <div className="form-group">
-        <label><b>Language</b></label>
-        <select value={language} onChange={(e) => setLanguage(e.target.value)}>
-          <option value="en-GB">English 🇬🇧</option>
-          <option value="fr-FR">French 🇫🇷</option>
-          <option value="ar-AR">Arabic 🇸🇦</option>
-        </select>
-      </div>
+    <>
+      <button
+        className="add-type-button"
+        onClick={() => setIsAddTypeModalOpen(true)}
+        title="Add New Type"
+      >
+        +
+      </button>
 
-      {/* Email input */}
-      <div className="form-group">
-        <label><b>Emails for response copy</b></label>
-        <div className="email-tags">
-          {emails.map((email, index) => (
-            <span key={index} className="email-tag">
-              {email}
-              <button type="button" onClick={() => removeEmail(email)}>×</button>
-            </span>
-          ))}
-        </div>
-        <div className="email-input-container">
-          <input
-            type="email"
-            placeholder="you@example.com"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addEmail()}
-            className={errors.email ? "error" : ""}
-          />
-          <button type="button" onClick={addEmail}>Add Email</button>
-        </div>
-        {errors.email && <p className="error-message">{errors.email}</p>}
-      </div>
-
-      {/* Model selection */}
-      <div className="form-group">
-        <label><b>Model</b></label>
-        <select value={model} onChange={(e) => setModel(e.target.value)}>
-          <option>Qwen 2.5 (3B)</option>
-          <option>qwen2-math (7B)</option>
-          <option>qwen2-math(1.5B)</option>
-          <option>mistral(7B)</option>
-          <option>deepseek-r1(1.5B)</option>
-          <option>llama3.2(1B)</option>
-        </select>
-      </div>
-
-      <UploadBox file={file} setFile={setFile} error={errors.file} />
-      {errors.file && <p className="error-message">{errors.file}</p>}
-
-      <SubmitButton
-        file={file}
-        email={emails}
-        model={model}
-        language={language}
-        shake={shake}
-        isLoading={isLoading}
-        success={isSuccess}
-        onClick={handleSubmit}
-        buttonRef={buttonRef}
+      <AddTypeModal
+        isOpen={isAddTypeModalOpen}
+        onClose={() => setIsAddTypeModalOpen(false)}
+        onSave={handleAddTypeSuccess}
       />
-    </div>
+
+      <div className="form-section">
+        {/* Language selection */}
+        <div className="form-group">
+          <label><b>Language</b></label>
+          <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+            <option value="en-GB">English 🇬🇧</option>
+            <option value="fr-FR">French 🇫🇷</option>
+            <option value="ar-AR">Arabic 🇸🇦</option>
+          </select>
+        </div>
+
+        {/* Email input */}
+        <div className="form-group">
+          <label><b>Emails for response copy</b></label>
+          <div className="email-tags">
+            {emails.map((email, index) => (
+              <span key={index} className="email-tag">
+                {email}
+                <button type="button" onClick={() => removeEmail(email)}>×</button>
+              </span>
+            ))}
+          </div>
+          <div className="email-input-container">
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addEmail()}
+              className={errors.email ? "error" : ""}
+            />
+            <button type="button" onClick={addEmail}>Add Email</button>
+          </div>
+          {errors.email && <p className="error-message">{errors.email}</p>}
+        </div>
+
+        {/* Model selection */}
+        <div className="form-group">
+          <label><b>Model</b></label>
+          <select value={model} onChange={(e) => setModel(e.target.value)}>
+            <option>Qwen 2.5 (3B)</option>
+            <option>qwen2-math (7B)</option>
+            <option>qwen2-math(1.5B)</option>
+            <option>mistral(7B)</option>
+            <option>deepseek-r1(1.5B)</option>
+            <option>llama3.2(1B)</option>
+          </select>
+        </div>
+
+        <UploadBox file={file} setFile={setFile} error={errors.file} />
+        {errors.file && <p className="error-message">{errors.file}</p>}
+
+        <SubmitButton
+          file={file}
+          email={emails}
+          model={model}
+          language={language}
+          shake={shake}
+          isLoading={isLoading}
+          success={isSuccess}
+          onClick={handleSubmit}
+          buttonRef={buttonRef}
+        />
+      </div>
+    </>
   );
 }
 

@@ -117,3 +117,83 @@
 .email-input-container button:hover {
   background-color: var(--light-green);
 }
+
+.add-type-button {
+  position: fixed;
+  top: 20px;
+  right: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+  z-index: 1000;
+  font-size: 24px;
+}
+
+.add-type-button:hover {
+  transform: scale(1.1);
+  background-color: var(--light-green);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.add-type-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1001;
+}
+
+.type-upload-container {
+  border: 2px dashed var(--input-border);
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  margin: 15px 0;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-actions .cancel {
+  background-color: #e0e0e0;
+}
+
+.modal-actions .save {
+  background-color: var(--primary-green);
+  color: white;
+}

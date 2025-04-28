@@ -1,0 +1,6 @@
+Instruction:Generate a professional alert to the client for THDV threshold exceedance in a single paragraph.from this json file by following this structure:
+*observation**:
+ The alert must include the device  label and value with the unit and the threshold with the unit. Note that the threshold is defined by IEEE 519 standards.  
+ **Context**:Explain that under normal conditions, the value should be much lower and suggest possible causes (malfunction, non-linear loads, defective equipment, etc.).
+**Immediate Actions**:
+**Next Steps**:

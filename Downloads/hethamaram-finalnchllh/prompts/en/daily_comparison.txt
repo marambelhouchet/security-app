@@ -1,0 +1,7 @@
+Instruction:
+Generate a professional, concise energy alert based on the provided JSON data regarding the Evolution of Daily Consumption.
+Follow the structure below:
+**Observation**:Start by mentioning the detected variation  percentage (which is {variation_percent}%)between today and yesterday,the device label, today_consumption value with unit and yesterday consumption with unit
+Add a brief context: if today is monday and yesterday is sundy mention that :consumption difference, noted between a Monday and a Sunday, could be due to the normal resumption of operations after the weekend and may not necessarily indicate a real issue.else if not between monday and yesterday mention that This variation, observed between two consecutive weekdays ({today} and {yesterday}), requires careful verification as it could indicate an operational or technical issue.
+**Immediate Actions**:
+**Recommended Actions**:

@@ -1,0 +1,5 @@
+Générez une alerte énergétique professionnelle et concise en cas de dépassement du seuil de puissance souscrite à l'aide du fichier JSON suivant.
+Suivez cette structure :
+**Observation** : Analysez la situation brièvement en indiquant le libellé de l'appareil, la valeur mesurée avec son unité, le seuil souscrit avec son unité et le pourcentage de dépassement ( {overrun_pct}). Mentionnez également que « tout dépassement prolongé au-delà de 10 % peut entraîner des pénalités sur votre facture d'énergie. »
+**Actions immédiates** : 
+**Actions recommandées** : 

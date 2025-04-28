@@ -1,0 +1,10 @@
+Générez une alerte structurée pour une distorsion harmonique totale de tension (THDV) élevée à l'aide du fichier JSON suivant.
+Structurez l'alerte comme suit :
+**Problème** :
+État : en une phrase, indiquez le dispositif et la valeur de la THDV avec l'unité, ainsi que le seuil avec l'unité.
+Énumérez une ou deux causes principales (par exemple, charges non linéaires, transformateurs vieillissants, déséquilibres de tension).
+Contexte de la machine
+Précisez la machine/zone affectée : nom du dispositif et comparez-le aux normes historiques en une phrase.
+Mettez en évidence les risques : « Les impacts potentiels incluent la surchauffe, la perte d'efficacité ou les dommages matériels. »
+**Actions immédiates**
+**Étapes suivantes**
